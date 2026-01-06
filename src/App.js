@@ -252,9 +252,9 @@ function HeroSection() {
               <p className="mt-2 text-sm font-semibold text-slate-900">
                 Sr Software Engineer · Smatt Account
               </p>
-              <p className="mt-1 text-xs text-slate-600">
-                Leading mobile ERP development, API design, and cross-functional
-                delivery.
+              <p className="mt-1 text-xs text-slate-600 dark:text-slate-200">
+                Leading ERP development across web, mobile, and desktop platforms, API design, cross-functional
+                delivery, and deployment.
               </p>
 
               <dl className="mt-6 space-y-3 text-xs text-slate-600">
