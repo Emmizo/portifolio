@@ -1036,10 +1036,35 @@ function EducationSection() {
 }
 
 function CertificatesSection() {
+  const [certificateViewer, setCertificateViewer] = useState({
+    isOpen: false,
+    certificate: null,
+  });
+
+  const openCertificate = (cert) => {
+    setCertificateViewer({ isOpen: true, certificate: cert });
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeCertificate = () => {
+    setCertificateViewer({ isOpen: false, certificate: null });
+    document.body.style.overflow = "";
+  };
+
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === "Escape" && certificateViewer.isOpen) {
+        closeCertificate();
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [certificateViewer.isOpen]);
+
   const certificates = [
     {
       name: "Windows Server Management and Security",
-      issuer: "University of Colorado System",
+      issuer: "Coursera",
       url: "https://www.coursera.org/account/accomplishments/verify/B3EJ6EZQKTEA",
     },
     {
@@ -1087,6 +1112,27 @@ function CertificatesSection() {
       issuer: "Coursera",
       url: "https://www.coursera.org/account/accomplishments/verify/AZMGNQVH6UK7",
     },
+    {
+      name: "Rwanda Blockchain Bootcamp",
+      issuer: "Digital Transformation Centre, Kigali",
+      description: "For taking part in the Rwanda blockchain bootcamp held on the 27th & 28th of November 2023",
+      url: "/image/certificates/Blockchain .pdf",
+      isPdf: true,
+    },
+    {
+      name: "Curriculum Development Contribution",
+      issuer: "Rwanda TVET Trainer Institute (RTTI)",
+      description: "In recognition of valuable contribution to the curriculum development",
+      url: "/image/certificates/Certificate-RTTI.pdf",
+      isPdf: true,
+    },
+    {
+      name: "ICP Blockchain Mega Hackathon",
+      issuer: "Internet Computer",
+      description: "For participation at the MEGA HACKATHON BY INTERNET COMPUTER",
+      url: "/image/certificates/ICP-blockchain.pdf",
+      isPdf: true,
+    },
   ];
 
   return (
@@ -1114,18 +1160,80 @@ function CertificatesSection() {
               <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
                 {cert.issuer}
               </p>
-              <a
-                href={cert.url}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-3 inline-flex items-center text-xs font-medium text-primary hover:underline dark:text-primary"
-              >
-                View certificate →
-              </a>
+              {cert.description && (
+                <p className="mt-2 text-xs text-slate-700 dark:text-slate-200">
+                  {cert.description}
+                </p>
+              )}
+              {cert.isPdf ? (
+                <button
+                  type="button"
+                  onClick={() => openCertificate(cert)}
+                  className="mt-3 inline-flex items-center text-xs font-medium text-primary hover:underline dark:text-primary"
+                >
+                  View PDF →
+                </button>
+              ) : (
+                <a
+                  href={cert.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-3 inline-flex items-center text-xs font-medium text-primary hover:underline dark:text-primary"
+                >
+                  View certificate →
+                </a>
+              )}
             </article>
           ))}
         </div>
       </div>
+
+      {certificateViewer.isOpen && certificateViewer.certificate && createPortal(
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/95 backdrop-blur-sm p-4"
+          onClick={closeCertificate}
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className="relative mx-auto flex h-[90vh] w-full max-w-4xl flex-col rounded-2xl bg-white p-5 shadow-2xl dark:bg-slate-900"
+            style={{ border: '4px solid #164655' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-4 flex shrink-0 items-center justify-between gap-4">
+              <div>
+                <h3 className="text-base font-semibold text-slate-900 dark:text-slate-50">
+                  {certificateViewer.certificate.name}
+                </h3>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-300">
+                  {certificateViewer.certificate.issuer}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={closeCertificate}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-lg font-semibold text-slate-600 transition hover:bg-slate-200 hover:text-slate-900 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-50"
+                aria-label="Close certificate viewer"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="flex min-h-0 flex-1 overflow-hidden rounded-xl border-4 bg-slate-50 dark:bg-slate-950" style={{ borderColor: '#164655' }}>
+              <iframe
+                src={certificateViewer.certificate.url}
+                className="h-full w-full"
+                title={certificateViewer.certificate.name}
+                style={{ minHeight: '600px' }}
+              />
+            </div>
+          </motion.div>
+        </div>,
+        document.body
+      )}
     </section>
   );
 }
