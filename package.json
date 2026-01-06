@@ -20,6 +20,7 @@
   "scripts": {
     "start": "craco start",
     "server": "node server.js",
+    "prebuild": "",
     "build": "craco build",
     "test": "craco test",
     "tailwind:watch": "tailwindcss -i ./src/index.css -o ./src/tailwind.css --watch",
