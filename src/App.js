@@ -56,9 +56,9 @@ function App() {
 function SiteChrome({ theme, navSolid, onToggleTheme }) {
   return (
     <div
-      className={`sticky top-0 z-40 transition-colors duration-300 ${
+      className={`sticky top-0 z-40 transition-all duration-300 ${
         navSolid
-          ? "bg-white/80 backdrop-blur shadow-sm dark:bg-slate-900/80"
+          ? "bg-white/95 backdrop-blur-md shadow-md dark:bg-slate-900/95"
           : "bg-transparent"
       }`}
     >
@@ -125,7 +125,7 @@ function HeroSection() {
   return (
     <section
       id="home"
-      className="section-padding bg-gradient-to-b from-white via-slate-50 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900"
+      className="section-padding bg-white dark:bg-slate-900"
     >
       <div className="mx-auto flex max-w-6xl flex-col gap-12 lg:flex-row lg:items-center">
         <div className="flex-1 space-y-7">
@@ -429,28 +429,23 @@ function SkillsSection() {
           </p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           {groups.map((group) => (
             <div
               key={group.title}
-              className="glass-panel group rounded-2xl p-5 transition hover:-translate-y-1 hover:shadow-lg"
+              className="glass-panel group rounded-xl p-4 transition hover:-translate-y-0.5 hover:shadow-md"
             >
-              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
                 {group.title}
               </p>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-wrap gap-1.5">
                 {group.items.map((item) => (
-                  <div
+                  <span
                     key={item}
-                    className="flex items-center gap-2 rounded-lg bg-slate-50/50 px-3 py-2 transition group-hover:bg-primary/5 dark:bg-slate-800/50"
+                    className="inline-flex items-center rounded-md bg-slate-100 px-2 py-1 text-[0.7rem] font-medium text-slate-700 transition group-hover:bg-primary/10 group-hover:text-primary dark:bg-slate-800 dark:text-slate-200"
                   >
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-[0.7rem] font-bold text-primary dark:bg-primary/20">
-                      {item.charAt(0).toUpperCase()}
-                    </div>
-                    <span className="text-[0.75rem] font-medium text-slate-700 dark:text-slate-200">
-                      {item}
-                    </span>
-                  </div>
+                    {item}
+                  </span>
                 ))}
               </div>
             </div>
@@ -824,7 +819,8 @@ function ProjectsSection() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="relative mx-auto flex h-[500px] max-w-2xl flex-col rounded-2xl border-2 border-primary bg-white p-5 shadow-2xl dark:bg-slate-900"
+            className="relative mx-auto flex max-h-[90vh] w-full max-w-2xl flex-col rounded-2xl bg-white p-5 shadow-2xl dark:bg-slate-900"
+            style={{ height: '500px', border: '4px solid #164655' }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-4 flex shrink-0 items-center justify-between gap-4">
@@ -848,11 +844,11 @@ function ProjectsSection() {
             </div>
 
             <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden">
-              <div className="relative flex h-full min-h-0 items-start justify-center overflow-auto rounded-xl border-2 border-primary bg-slate-50 p-4 dark:border-primary dark:bg-slate-950">
+              <div className="relative flex h-full min-h-0 items-start justify-center overflow-auto rounded-xl bg-slate-50 p-4 dark:bg-slate-950" >
                 <img
                   src={projects[imageViewer.projectIndex].images[imageViewer.imageIndex]}
                   alt={`${projects[imageViewer.projectIndex].name} ${imageViewer.imageIndex + 1}`}
-                  className="w-full object-contain"
+                  className="h-auto w-full object-contain"
                 />
                 {projects[imageViewer.projectIndex].images.length > 1 && (
                   <>
@@ -862,7 +858,7 @@ function ProjectsSection() {
                         e.stopPropagation();
                         showPrevImage();
                       }}
-                      className="pointer-events-auto absolute left-4 top-1/2 -translate-y-1/2 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-lg font-semibold text-slate-900 shadow-lg backdrop-blur transition hover:bg-white hover:scale-110 dark:bg-slate-800/95 dark:text-slate-100"
+                      className="pointer-events-auto absolute left-2 top-1/2 -translate-y-1/2 z-20 inline-flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-primary text-2xl font-bold text-primary shadow-xl backdrop-blur transition-all hover:bg-primary hover:text-white hover:scale-110 dark:bg-slate-800 dark:border-primary dark:text-primary dark:hover:bg-primary dark:hover:text-white"
                       aria-label="Previous image"
                     >
                       ‹
@@ -873,7 +869,7 @@ function ProjectsSection() {
                         e.stopPropagation();
                         showNextImage();
                       }}
-                      className="pointer-events-auto absolute right-4 top-1/2 -translate-y-1/2 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-lg font-semibold text-slate-900 shadow-lg backdrop-blur transition hover:bg-white hover:scale-110 dark:bg-slate-800/95 dark:text-slate-100"
+                      className="pointer-events-auto absolute right-2 top-1/2 -translate-y-1/2 z-20 inline-flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-primary text-2xl font-bold text-primary shadow-xl backdrop-blur transition-all hover:bg-primary hover:text-white hover:scale-110 dark:bg-slate-800 dark:border-primary dark:text-primary dark:hover:bg-primary dark:hover:text-white"
                       aria-label="Next image"
                     >
                       ›
@@ -897,6 +893,7 @@ function ProjectsSection() {
                           ? "border-primary ring-2 ring-primary/20"
                           : "border-slate-200 dark:border-slate-700"
                       }`}
+                      style={idx === imageViewer.imageIndex ? { borderColor: '#164655' } : {}}
                     >
                       <img
                         src={img}
