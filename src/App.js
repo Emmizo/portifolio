@@ -45,6 +45,7 @@ function App() {
         <ExperienceSection />
         <ConsultancySection />
         <EducationSection />
+        <CertificatesSection />
         <ProjectsSection />
         <ContactSection />
       </main>
@@ -81,6 +82,7 @@ function SiteChrome({ theme, navSolid, onToggleTheme }) {
           <NavLink href="#about">About</NavLink>
           <NavLink href="#skills">Skills</NavLink>
           <NavLink href="#experience">Experience</NavLink>
+          <NavLink href="#certificates">Certificates</NavLink>
           <NavLink href="#projects">Projects</NavLink>
           <NavLink href="#contact">Contact</NavLink>
         </div>
@@ -1025,6 +1027,101 @@ function EducationSection() {
                   ))}
                 </ul>
               )}
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CertificatesSection() {
+  const certificates = [
+    {
+      name: "Windows Server Management and Security",
+      issuer: "University of Colorado System",
+      url: "https://www.coursera.org/account/accomplishments/verify/B3EJ6EZQKTEA",
+    },
+    {
+      name: "Introduction to Front-end Development with ReactJS",
+      issuer: "Coursera",
+      url: "https://www.coursera.org/account/accomplishments/verify/ZP2PYHTM9BZ6",
+    },
+    {
+      name: "RESTful API with HTTP and JavaScript",
+      issuer: "Coursera",
+      url: "https://www.coursera.org/account/accomplishments/verify/6DLSFQRZDZTJ",
+    },
+    {
+      name: "Advanced Relational Database and SQL",
+      issuer: "Coursera",
+      url: "https://www.coursera.org/account/accomplishments/verify/88ZWSUM7ZAKS",
+    },
+    {
+      name: "Front-End Web UI Frameworks and Tools: Bootstrap 4",
+      issuer: "Coursera",
+      url: "https://www.coursera.org/account/accomplishments/verify/F2W3ZU8RRETE",
+    },
+    {
+      name: "Intel® Network Academy - Network Transformation 102",
+      issuer: "Intel",
+      url: "https://www.coursera.org/account/accomplishments/verify/AVN5PSX4NHUP",
+    },
+    {
+      name: "Build CRUD REST API in Django",
+      issuer: "Coursera",
+      url: "https://www.coursera.org/account/accomplishments/verify/QL2CZP4QJR9G",
+    },
+    {
+      name: "Linux Server Management and Security",
+      issuer: "Coursera",
+      url: "https://www.coursera.org/account/accomplishments/verify/HWPQG7XV3PJD",
+    },
+    {
+      name: "Technical Support Fundamentals",
+      issuer: "Coursera",
+      url: "https://www.coursera.org/account/accomplishments/verify/8FB5DLSKE3ED",
+    },
+    {
+      name: "Programming for Everybody (Getting Started with Python)",
+      issuer: "Coursera",
+      url: "https://www.coursera.org/account/accomplishments/verify/AZMGNQVH6UK7",
+    },
+  ];
+
+  return (
+    <section id="certificates" className="section-padding bg-slate-50 dark:bg-slate-900">
+      <div className="mx-auto max-w-6xl">
+        <div className="mb-8 max-w-2xl">
+          <p className={`${sectionTitleClasses} dark:text-slate-200`}>Certificates</p>
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-50 sm:text-3xl">
+            Certificates
+          </h2>
+          <p className="mt-3 text-sm text-slate-600 dark:text-slate-200">
+            Professional certifications and online courses completed.
+          </p>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {certificates.map((cert) => (
+            <article
+              key={cert.name}
+              className="glass-panel group rounded-2xl p-5 transition-transform duration-200 hover:-translate-y-1"
+            >
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">
+                {cert.name}
+              </h3>
+              <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
+                {cert.issuer}
+              </p>
+              <a
+                href={cert.url}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3 inline-flex items-center text-xs font-medium text-primary hover:underline dark:text-primary"
+              >
+                View certificate →
+              </a>
             </article>
           ))}
         </div>
