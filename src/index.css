@@ -1,13 +1,60 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply m-0 bg-white text-slate-800 font-sans antialiased transition-colors duration-300;
+  }
+
+  p,
+  li,
+  dd {
+    @apply text-slate-700;
+  }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@layer utilities {
+  .section-padding {
+    @apply px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-32 py-12 sm:py-16 lg:py-20;
+  }
+
+  .glass-panel {
+    @apply bg-white/80 backdrop-blur border border-slate-200/60 shadow-soft-card;
+  }
+
+  .dark body {
+    @apply bg-slate-900 text-slate-100;
+  }
+
+  .dark p,
+  .dark li,
+  .dark dd {
+    @apply text-slate-200;
+  }
+
+  .dark .glass-panel {
+    @apply bg-slate-800/70 border-slate-700 shadow-none;
+  }
+
+  /* Improve contrast for common text colors in dark mode */
+  .dark .text-slate-700 {
+    @apply text-slate-100;
+  }
+
+  .dark .text-slate-600 {
+    @apply text-slate-200;
+  }
+
+  .dark .text-slate-500 {
+    @apply text-slate-300;
+  }
+
+  .dark .text-slate-800 {
+    @apply text-slate-100;
+  }
 }
