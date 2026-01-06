@@ -988,7 +988,7 @@ function EducationSection() {
       period: "2024 – Ongoing",
       details: [
         "Advanced software architecture, scalability, and engineering management.",
-        "Research focus on building resilient, user-centered products.",
+        "Research focus on An AI-Powered Restaurant Recommendation System Incorporating Real-Time Location Detection",
       ],
     },
   ];
