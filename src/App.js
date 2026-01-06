@@ -1,6 +1,7 @@
 import "./App.css";
 import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 const sectionTitleClasses =
   "text-sm font-semibold tracking-[0.16em] uppercase text-primary/80 mb-3";
@@ -154,7 +155,7 @@ function HeroSection() {
           >
             Experienced Software Engineer with 6+ years in web and mobile
             development using Laravel, Spring Boot, Django, React, and Flutter.
-            I design scalable systems, lead teams, and ship high-quality
+            I design scalable systems, lead teams, and deliver high-quality
             products aligned with business goals.
           </motion.p>
 
@@ -304,7 +305,7 @@ function AboutSection() {
         <div className="space-y-4">
           <p className={`${sectionTitleClasses} dark:text-slate-200`}>About</p>
           <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-50 sm:text-3xl">
-            I build and ship reliable software across backend, web, and mobile.
+            About me
           </h2>
           <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-200">
             Experienced Software Engineer with 6+ years in web and mobile
@@ -421,33 +422,37 @@ function SkillsSection() {
         <div className="mb-8 max-w-2xl">
           <p className={`${sectionTitleClasses} dark:text-slate-200`}>Skills</p>
           <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-50 sm:text-3xl">
-            A pragmatic full-stack skill set focused on shipping real products.
+            Technologies and tools I work with
           </h2>
           <p className="mt-3 text-sm text-slate-600 dark:text-slate-200">
-            I&apos;m comfortable from database design and API development to
-            modern frontends and mobile experiences.
+            I work with various technologies across backend, frontend, and mobile development.
           </p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {groups.map((group) => (
             <div
               key={group.title}
-              className="glass-panel group rounded-2xl p-4 transition hover:-translate-y-1 hover:shadow-lg"
+              className="glass-panel group rounded-2xl p-5 transition hover:-translate-y-1 hover:shadow-lg"
             >
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
                 {group.title}
               </p>
-              <ul className="mt-3 flex flex-wrap gap-1.5 text-[0.7rem] text-slate-700 dark:text-slate-200">
+              <div className="flex flex-col gap-2">
                 {group.items.map((item) => (
-                  <li
+                  <div
                     key={item}
-                    className="rounded-full bg-slate-50 px-2.5 py-1 text-[0.7rem] text-slate-700 shadow-sm transition group-hover:bg-primary/6 dark:bg-slate-800 dark:text-slate-200"
+                    className="flex items-center gap-2 rounded-lg bg-slate-50/50 px-3 py-2 transition group-hover:bg-primary/5 dark:bg-slate-800/50"
                   >
-                    {item}
-                  </li>
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-[0.7rem] font-bold text-primary dark:bg-primary/20">
+                      {item.charAt(0).toUpperCase()}
+                    </div>
+                    <span className="text-[0.75rem] font-medium text-slate-700 dark:text-slate-200">
+                      {item}
+                    </span>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           ))}
         </div>
@@ -512,14 +517,10 @@ function ExperienceSection() {
         <div className="mb-8 max-w-2xl">
           <p className={`${sectionTitleClasses} dark:text-slate-200`}>Experience</p>
           <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-50 sm:text-3xl">
-            Full-stack delivery across backend platforms, modern web, and mobile
-            products.
+            Work experience
           </h2>
           <p className="mt-3 text-sm text-slate-600 dark:text-slate-200">
-            From startups to established teams, I&apos;ve led and contributed to
-            systems and interfaces that support real customers and business
-            operations—covering APIs, scalable services, and React/Flutter
-            frontends.
+            My professional journey in software development.
           </p>
         </div>
 
@@ -586,6 +587,28 @@ function ProjectsSection() {
       ],
       tech: ["Spring Boot", "MySQL", "Git", "GitLab", "Postman"],
       role: "Backend development · System design",
+      website: "https://goodbyeoldhome.com/",
+      repo: null,
+      images: ["/image/project/screencapture-goodbyeoldhome-2026-01-06-14_23_32.png"],
+    },
+    {
+      name: "SmattERP",
+      description:
+        "A comprehensive trading and stock management system. Manage inventory, track sales and purchases, and grow your business with powerful analytics.",
+      details: [
+        "Designed and developed end‑to‑end ERP modules for sales, purchases, inventory, and accounting.",
+        "Built secure backend services and rich web dashboards for real‑time business insights.",
+        "Implemented CI/CD and containerized deployments using Docker for reliable releases.",
+      ],
+      tech: ["Laravel", "Spring Boot", "React", "MySQL", "Docker"],
+      role: "Full‑stack ERP & inventory management",
+      website: "https://smatterp.com/",
+      repo: null,
+      images: [
+        "/image/project/Dashboard-smatterp.png",
+        "/image/project/Front page-smatterp.png",
+        "/image/project/Dash-smatterp.jpg",
+      ],
     },
     {
       name: "Plant Health Assistant",
@@ -599,6 +622,9 @@ function ProjectsSection() {
       ],
       tech: ["Flutter", "Firebase", "Postman", "Swagger"],
       role: "Flutter mobile · API integration",
+      website: null,
+      repo: "https://github.com/Emmizo/agri_app",
+      images: ["/image/project/Plant-Health-Assistant.png"],
     },
     {
       name: "Driver App",
@@ -611,6 +637,9 @@ function ProjectsSection() {
       ],
       tech: ["Spring Boot", "Flutter", "Dart", "Postman", "Git", "Bitbucket", "MagicCode"],
       role: "Backend APIs · Mobile UI implementation",
+      website: null,
+      repo: null,
+      images: [],
     },
     {
       name: "Leave Management",
@@ -624,8 +653,74 @@ function ProjectsSection() {
       ],
       tech: ["Spring Boot", "React", "Docker", "Git", "GitHub"],
       role: "Full‑stack development",
+      website: null,
+      repo: "https://github.com/Emmizo/leave-management",
+      images: [
+        "/image/project/dashboard-leavemanagement.jpeg",
+        "/image/project/Leave-apply-leavemanagement.jpeg",
+        "/image/project/login-leavemanagement.jpeg",
+      ],
     },
   ];
+
+  const [imageViewer, setImageViewer] = useState({
+    isOpen: false,
+    projectIndex: 0,
+    imageIndex: 0,
+  });
+
+  const openImages = (projectIndex, imageIndex = 0) => {
+    setImageViewer({ isOpen: true, projectIndex, imageIndex });
+  };
+
+  const closeImages = () => {
+    setImageViewer((prev) => ({ ...prev, isOpen: false }));
+  };
+
+  const showNextImage = () => {
+    setImageViewer((prev) => {
+      const project = projects[prev.projectIndex];
+      const total = project.images?.length || 0;
+      if (total === 0) return prev;
+      return {
+        ...prev,
+        imageIndex: (prev.imageIndex + 1) % total,
+      };
+    });
+  };
+
+  const showPrevImage = () => {
+    setImageViewer((prev) => {
+      const project = projects[prev.projectIndex];
+      const total = project.images?.length || 0;
+      if (total === 0) return prev;
+      return {
+        ...prev,
+        imageIndex: (prev.imageIndex - 1 + total) % total,
+      };
+    });
+  };
+
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === "Escape" && imageViewer.isOpen) {
+        closeImages();
+      }
+    };
+    
+    // Lock body scroll when modal is open
+    if (imageViewer.isOpen) {
+      document.body.style.overflow = "hidden";
+      document.addEventListener("keydown", handleEscape);
+    } else {
+      document.body.style.overflow = "";
+    }
+    
+    return () => {
+      document.body.style.overflow = "";
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [imageViewer.isOpen]);
 
   return (
     <section id="projects" className="section-padding bg-slate-50 dark:bg-slate-900">
@@ -633,57 +728,193 @@ function ProjectsSection() {
         <div className="mb-8 max-w-2xl">
           <p className={`${sectionTitleClasses} dark:text-slate-200`}>Projects</p>
           <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-50 sm:text-3xl">
-            Selected work across ERP, mobile, and custom business tools.
+            Projects
           </h2>
           <p className="mt-3 text-sm text-slate-600 dark:text-slate-200">
-            These projects represent the kind of real-world problems I enjoy
-            solving: structured data, clear workflows, and reliable platforms.
+            Some of the projects I&apos;ve worked on.
           </p>
         </div>
 
         <div className="grid gap-5 md:grid-cols-2">
-          {projects.map((project) => (
+          {projects.map((project, index) => (
             <article
               key={project.name}
               className="group glass-panel flex flex-col rounded-2xl p-5 transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg"
             >
-              <header className="flex items-start justify-between gap-4">
-                <div>
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">
-                    {project.name}
-                  </h3>
-                  <p className="mt-1 text-xs text-slate-600 dark:text-slate-200">
-                    {project.description}
-                  </p>
-                </div>
-              </header>
+                <header className="flex items-start justify-between gap-4">
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">
+                      {project.name}
+                    </h3>
+                    <p className="mt-1 text-xs text-slate-600 dark:text-slate-200">
+                      {project.description}
+                    </p>
+                  </div>
+                </header>
 
-              {project.details && (
-                <ul className="mt-3 space-y-1.5 text-xs text-slate-700 dark:text-slate-200">
-                  {project.details.map((line) => (
-                    <li key={line}>• {line}</li>
+                {project.details && (
+                  <ul className="mt-3 space-y-1.5 text-xs text-slate-700 dark:text-slate-200">
+                    {project.details.map((line) => (
+                      <li key={line}>• {line}</li>
+                    ))}
+                  </ul>
+                )}
+
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {project.tech.map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full bg-slate-50 px-2.5 py-1 text-[0.7rem] text-slate-700 shadow-sm dark:bg-slate-800 dark:text-slate-200"
+                    >
+                      {tag}
+                    </span>
                   ))}
-                </ul>
-              )}
+                </div>
 
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {project.tech.map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-full bg-slate-50 px-2.5 py-1 text-[0.7rem] text-slate-700 shadow-sm dark:bg-slate-800 dark:text-slate-200"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+                {(project.website || project.repo || (project.images && project.images.length > 0)) && (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {project.website && (
+                      <a
+                        href={project.website}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-slate-700 transition hover:-translate-y-0.5 hover:border-primary/40 hover:text-primary hover:shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                      >
+                        Visit site
+                      </a>
+                    )}
+                    {project.repo && (
+                      <a
+                        href={project.repo}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-slate-700 transition hover:-translate-y-0.5 hover:border-primary/40 hover:text-primary hover:shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                      >
+                        GitHub repo
+                      </a>
+                    )}
+                    {project.images && project.images.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => openImages(index)}
+                        className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-slate-700 transition hover:-translate-y-0.5 hover:border-primary/40 hover:text-primary hover:shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                      >
+                        View images
+                      </button>
+                    )}
+                  </div>
+                )}
 
-              <p className="mt-3 text-[0.72rem] font-medium uppercase tracking-[0.16em] text-slate-500 dark:text-slate-300">
-                Role: {project.role}
-              </p>
+                <p className="mt-3 text-[0.72rem] font-medium uppercase tracking-[0.16em] text-slate-500 dark:text-slate-300">
+                  Role: {project.role}
+                </p>
             </article>
           ))}
         </div>
       </div>
+
+      {imageViewer.isOpen && projects[imageViewer.projectIndex] && createPortal(
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/95 backdrop-blur-sm p-4"
+          onClick={closeImages}
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className="relative mx-auto flex h-[500px] max-w-2xl flex-col rounded-2xl border-2 border-primary bg-white p-5 shadow-2xl dark:bg-slate-900"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-4 flex shrink-0 items-center justify-between gap-4">
+              <div>
+                <h3 className="text-base font-semibold text-slate-900 dark:text-slate-50">
+                  {projects[imageViewer.projectIndex].name}
+                </h3>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-300">
+                  Image {imageViewer.imageIndex + 1} of{" "}
+                  {projects[imageViewer.projectIndex].images.length}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={closeImages}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-lg font-semibold text-slate-600 transition hover:bg-slate-200 hover:text-slate-900 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-50"
+                aria-label="Close image viewer"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden">
+              <div className="relative flex h-full min-h-0 items-start justify-center overflow-auto rounded-xl border-2 border-primary bg-slate-50 p-4 dark:border-primary dark:bg-slate-950">
+                <img
+                  src={projects[imageViewer.projectIndex].images[imageViewer.imageIndex]}
+                  alt={`${projects[imageViewer.projectIndex].name} ${imageViewer.imageIndex + 1}`}
+                  className="w-full object-contain"
+                />
+                {projects[imageViewer.projectIndex].images.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        showPrevImage();
+                      }}
+                      className="pointer-events-auto absolute left-4 top-1/2 -translate-y-1/2 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-lg font-semibold text-slate-900 shadow-lg backdrop-blur transition hover:bg-white hover:scale-110 dark:bg-slate-800/95 dark:text-slate-100"
+                      aria-label="Previous image"
+                    >
+                      ‹
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        showNextImage();
+                      }}
+                      className="pointer-events-auto absolute right-4 top-1/2 -translate-y-1/2 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-lg font-semibold text-slate-900 shadow-lg backdrop-blur transition hover:bg-white hover:scale-110 dark:bg-slate-800/95 dark:text-slate-100"
+                      aria-label="Next image"
+                    >
+                      ›
+                    </button>
+                  </>
+                )}
+              </div>
+
+              {projects[imageViewer.projectIndex].images.length > 1 && (
+                <div className="flex shrink-0 gap-2 overflow-x-auto pb-2">
+                  {projects[imageViewer.projectIndex].images.map((img, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setImageViewer((prev) => ({ ...prev, imageIndex: idx }));
+                      }}
+                      className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 transition hover:opacity-80 ${
+                        idx === imageViewer.imageIndex
+                          ? "border-primary ring-2 ring-primary/20"
+                          : "border-slate-200 dark:border-slate-700"
+                      }`}
+                    >
+                      <img
+                        src={img}
+                        alt={`Thumbnail ${idx + 1}`}
+                        className="h-full w-full object-cover"
+                      />
+                      {idx === imageViewer.imageIndex && (
+                        <div className="absolute inset-0 bg-primary/10" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </div>,
+        document.body
+      )}
     </section>
   );
 }
@@ -708,11 +939,10 @@ function ConsultancySection() {
         <div className="mb-8 max-w-2xl">
           <p className={`${sectionTitleClasses} dark:text-slate-200`}>Consultancy</p>
           <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-50 sm:text-3xl">
-            Teaching, mentoring, and curriculum work.
+            Consultancy
           </h2>
           <p className="mt-3 text-sm text-slate-600 dark:text-slate-200">
-            Sharing knowledge through formal curriculum work and hands-on
-            training programs.
+            Curriculum development and training programs.
           </p>
         </div>
 
@@ -772,7 +1002,7 @@ function EducationSection() {
         <div className="mb-8 max-w-2xl">
           <p className={`${sectionTitleClasses} dark:text-slate-200`}>Education</p>
           <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-50 sm:text-3xl">
-            Formal education underpinning my engineering practice.
+            Education
           </h2>
         </div>
 
@@ -853,13 +1083,10 @@ function ContactSection() {
           <div className="space-y-4">
           <p className={`${sectionTitleClasses} dark:text-slate-200`}>Contact</p>
             <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-50 sm:text-3xl">
-              Let&apos;s talk about building your next product or improving an
-              existing one.
+              Get in touch
             </h2>
             <p className="text-sm text-slate-600 dark:text-slate-200">
-              Whether you&apos;re looking for backend-heavy systems, full-stack
-              product work, or modern mobile experiences, I&apos;m happy to
-              discuss how I can help.
+              Feel free to reach out if you&apos;d like to work together or have any questions.
             </p>
 
             <div className="mt-4 space-y-3 text-sm text-slate-700 dark:text-slate-200">

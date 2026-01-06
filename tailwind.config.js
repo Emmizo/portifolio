@@ -12,6 +12,16 @@ module.exports = {
       },
       fontFamily: {
         sans: [
+          '"Satoshi"',
+          "-apple-system",
+          "BlinkMacSystemFont",
+          '"Segoe UI"',
+          "system-ui",
+          "sans-serif",
+        ],
+        display: [
+          '"Urbanist"',
+          '"Satoshi"',
           "-apple-system",
           "BlinkMacSystemFont",
           '"Segoe UI"',
