@@ -12,6 +12,7 @@ const sectionTitleClasses =
 function App() {
   const [theme, setTheme] = useState("light");
   const [navSolid, setNavSolid] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -32,14 +33,22 @@ function App() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const handleResize = () => setIsMobile(mq.matches);
+    handleResize();
+    mq.addEventListener("change", handleResize);
+    return () => mq.removeEventListener("change", handleResize);
+  }, []);
+
   const toggleTheme = () => {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      <SiteChrome theme={theme} navSolid={navSolid} onToggleTheme={toggleTheme} />
-      <main>
+      <SiteChrome theme={theme} navSolid={navSolid || !isMobile} onToggleTheme={toggleTheme} />
+      <main className={isMobile ? "pb-24" : ""}>
         <HeroSection />
         <AboutSection />
         <SkillsSection />
@@ -51,7 +60,7 @@ function App() {
         <ContactSection />
       </main>
       <Footer />
-      <MobileBottomNav navSolid={navSolid} />
+      <MobileBottomNav isMobile={isMobile} />
     </div>
   );
 }
@@ -101,7 +110,7 @@ function SiteChrome({ theme, navSolid, onToggleTheme }) {
           </button>
           <a
             href="#contact"
-            className="inline-flex items-center rounded-full border border-primary/10 bg-primary px-4 py-1.5 text-xs font-semibold tracking-[0.16em] uppercase text-white shadow-soft-card transition hover:-translate-y-0.5 hover:bg-[#123744] hover:shadow-lg"
+            className="inline-flex items-center whitespace-nowrap rounded-full border border-primary/10 bg-primary px-3 py-1.5 text-[0.7rem] font-semibold tracking-[0.12em] uppercase text-white shadow-soft-card transition hover:-translate-y-0.5 hover:bg-[#123744] hover:shadow-lg sm:px-4 sm:text-xs sm:tracking-[0.16em]"
           >
             Let&apos;s talk
           </a>
@@ -123,28 +132,31 @@ function NavLink({ href, children }) {
   );
 }
 
-function MobileBottomNav({ navSolid }) {
-  if (!navSolid) return null;
+function MobileBottomNav({ isMobile }) {
+  if (!isMobile) return null;
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/95 sm:hidden">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-1 px-2 py-2 text-[0.7rem] font-medium uppercase tracking-[0.12em] text-slate-600 dark:text-slate-300">
-        <a href="#home" className="flex-1 px-1 py-1 text-center rounded-full hover:text-primary">
+    <nav className="pointer-events-none fixed left-3 right-3 bottom-3 z-50 sm:hidden">
+      <div
+        className="pointer-events-auto mx-auto flex max-w-md items-center justify-between gap-1 rounded-full border border-slate-200 bg-white/95 px-2 py-2 text-[0.7rem] font-medium uppercase tracking-[0.12em] text-slate-600 shadow-lg shadow-slate-900/5 backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/95 dark:text-slate-300"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 6px)" }}
+      >
+        <a href="#home" className="flex-1 px-1 py-1 text-center rounded-full whitespace-nowrap hover:text-primary">
           Home
         </a>
-        <a href="#about" className="flex-1 px-1 py-1 text-center rounded-full hover:text-primary">
+        <a href="#about" className="flex-1 px-1 py-1 text-center rounded-full whitespace-nowrap hover:text-primary">
           About
         </a>
-        <a href="#skills" className="flex-1 px-1 py-1 text-center rounded-full hover:text-primary">
+        <a href="#skills" className="flex-1 px-1 py-1 text-center rounded-full whitespace-nowrap hover:text-primary">
           Skills
         </a>
-        <a href="#experience" className="flex-1 px-1 py-1 text-center rounded-full hover:text-primary">
+        <a href="#experience" className="flex-1 px-1 py-1 text-center rounded-full whitespace-nowrap hover:text-primary">
           Work
         </a>
-        <a href="#projects" className="flex-1 px-1 py-1 text-center rounded-full hover:text-primary">
+        <a href="#projects" className="flex-1 px-1 py-1 text-center rounded-full whitespace-nowrap hover:text-primary">
           Projects
         </a>
-        <a href="#contact" className="flex-1 px-1 py-1 text-center rounded-full hover:text-primary">
+        <a href="#contact" className="flex-1 px-1 py-1 text-center rounded-full whitespace-nowrap hover:text-primary">
           Contact
         </a>
       </div>
@@ -175,7 +187,7 @@ function HeroSection() {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: "easeOut", delay: 0.12 }}
-            className="text-4xl font-semibold leading-tight text-slate-900 dark:text-slate-50 sm:text-5xl lg:text-[3.1rem]"
+            className="text-3xl font-semibold leading-tight text-slate-900 dark:text-slate-50 sm:text-4xl lg:text-[3.1rem]"
           >
             Building reliable web & mobile experiences for modern businesses.
           </motion.h1>
