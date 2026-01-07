@@ -24,7 +24,8 @@ function App() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setNavSolid(window.scrollY > 40);
+      // Make header + mobile bottom nav solid as soon as the user starts scrolling
+      setNavSolid(window.scrollY > 0);
     };
     handleScroll();
     window.addEventListener("scroll", handleScroll);
@@ -50,6 +51,7 @@ function App() {
         <ContactSection />
       </main>
       <Footer />
+      <MobileBottomNav navSolid={navSolid} />
     </div>
   );
 }
@@ -121,6 +123,35 @@ function NavLink({ href, children }) {
   );
 }
 
+function MobileBottomNav({ navSolid }) {
+  if (!navSolid) return null;
+
+  return (
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/95 sm:hidden">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-1 px-2 py-2 text-[0.7rem] font-medium uppercase tracking-[0.12em] text-slate-600 dark:text-slate-300">
+        <a href="#home" className="flex-1 px-1 py-1 text-center rounded-full hover:text-primary">
+          Home
+        </a>
+        <a href="#about" className="flex-1 px-1 py-1 text-center rounded-full hover:text-primary">
+          About
+        </a>
+        <a href="#skills" className="flex-1 px-1 py-1 text-center rounded-full hover:text-primary">
+          Skills
+        </a>
+        <a href="#experience" className="flex-1 px-1 py-1 text-center rounded-full hover:text-primary">
+          Work
+        </a>
+        <a href="#projects" className="flex-1 px-1 py-1 text-center rounded-full hover:text-primary">
+          Projects
+        </a>
+        <a href="#contact" className="flex-1 px-1 py-1 text-center rounded-full hover:text-primary">
+          Contact
+        </a>
+      </div>
+    </nav>
+  );
+}
+
 function HeroSection() {
   const prefersReducedMotion = useReducedMotion();
 
@@ -130,7 +161,7 @@ function HeroSection() {
       className="section-padding bg-white dark:bg-slate-900"
     >
       <div className="mx-auto flex max-w-6xl flex-col gap-12 lg:flex-row lg:items-center">
-        <div className="flex-1 space-y-7">
+        <div className="flex-1 order-2 space-y-7 lg:order-1">
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -212,7 +243,7 @@ function HeroSection() {
           </motion.div>
         </div>
 
-        <div className="flex-1">
+        <div className="flex-1 order-1 lg:order-2">
           <motion.div
             initial={
               prefersReducedMotion
