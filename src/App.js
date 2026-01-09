@@ -1011,11 +1011,12 @@ function ConsultancySection() {
 function EducationSection() {
   const items = [
     {
-      school: "RP Tumba",
-      program: "Information Communication and Technology",
-      period: "2015 – 2018",
+      school: "INES-Ruhengeri",
+      program: "Master of Science in Software Engineering",
+      period: "2024 – Ongoing",
       details: [
-        "Foundations in ICT, systems, and applied technical practice.",
+        "Advanced software architecture, scalability, and engineering management.",
+        "Research focus on An AI-Powered Restaurant Recommendation System Incorporating Real-Time Location Detection",
       ],
     },
     {
@@ -1028,12 +1029,11 @@ function EducationSection() {
       ],
     },
     {
-      school: "INES-Ruhengeri",
-      program: "Master of Science in Software Engineering",
-      period: "2024 – Ongoing",
+      school: "RP Tumba",
+      program: "Information Communication and Technology",
+      period: "2015 – 2018",
       details: [
-        "Advanced software architecture, scalability, and engineering management.",
-        "Research focus on An AI-Powered Restaurant Recommendation System Incorporating Real-Time Location Detection",
+        "Foundations in ICT, systems, and applied technical practice.",
       ],
     },
   ];
