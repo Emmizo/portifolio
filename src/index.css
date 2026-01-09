@@ -7,7 +7,7 @@
     scroll-behavior: smooth;
   }
 
-  body {
+body {
     @apply m-0 bg-white text-slate-800 font-sans antialiased transition-colors duration-300;
   }
 
@@ -53,7 +53,7 @@
   /* Improve contrast for common text colors in dark mode */
   .dark .text-slate-700 {
     @apply text-slate-100;
-  }
+}
 
   .dark .text-slate-600 {
     @apply text-slate-200;

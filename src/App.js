@@ -68,18 +68,16 @@ function App() {
 function SiteChrome({ theme, navSolid, onToggleTheme }) {
   return (
     <div
-      className={`sticky top-0 z-40 transition-all duration-300 ${
-        navSolid
-          ? "bg-white/95 backdrop-blur-md shadow-md dark:bg-slate-900/95"
-          : "bg-transparent"
-      }`}
+      className="sticky top-0 z-40 bg-white shadow-md dark:bg-slate-900 transition-all duration-300"
     >
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         <div className="flex items-center gap-2">
           <div
-            className="h-8 w-8 rounded-xl border border-primary/10 bg-[conic-gradient(at_top_left,_#164655,_#0f172a,_#164655)] shadow-soft-card"
+            className="flex h-8 w-8 items-center justify-center rounded-xl border border-primary/10 bg-primary/5 text-sm font-mono font-semibold text-primary shadow-soft-card"
             aria-hidden="true"
-          />
+          >
+            {"</>"}
+          </div>
           <div className="flex flex-col leading-none">
             <span className="text-xs font-medium uppercase tracking-[0.18em] text-primary">
               Kwizera Emmanuel
