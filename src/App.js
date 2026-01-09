@@ -68,7 +68,7 @@ function App() {
 function SiteChrome({ theme, navSolid, onToggleTheme }) {
   return (
     <div
-      className="sticky top-0 z-40 bg-white shadow-md dark:bg-slate-900 transition-all duration-300"
+      className="sticky top-0 z-40 bg-white dark:bg-slate-900 transition-all duration-300"
     >
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         <div className="flex items-center gap-2">
