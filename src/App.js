@@ -685,7 +685,10 @@ function ProjectCard({ project, index, onOpenImage }) {
 
         <div className="mt-auto flex items-center gap-2">
           <button 
-            onClick={onOpenImage}
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenImage();
+            }}
             className="inline-flex w-full items-center justify-center rounded-lg bg-cyan-500/10 px-3 py-1.5 text-xs font-semibold text-cyan-400 transition-colors hover:bg-cyan-500/20"
           >
             View full
@@ -830,6 +833,7 @@ function ProjectsSection() {
       document.body.style.overflow = "";
       document.removeEventListener("keydown", handleKeyDown);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageViewer.isOpen]);
 
   const activeProject = projects[imageViewer.projectIndex];
@@ -876,6 +880,8 @@ function ProjectsSection() {
             modules={[Autoplay, Pagination]}
             spaceBetween={24}
             slidesPerView={1}
+            preventClicks={false}
+            preventClicksPropagation={false}
             autoplay={{ delay: 3000, disableOnInteraction: false }}
             pagination={{ clickable: true }}
             breakpoints={{
