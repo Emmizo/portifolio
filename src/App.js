@@ -2,6 +2,10 @@ import "./App.css";
 import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
 
 const sectionTitleClasses =
   "text-sm font-semibold tracking-[0.16em] uppercase text-primary/80 mb-3";
@@ -10,7 +14,7 @@ const sectionTitleClasses =
 // to keep content always visible; motion is now focused on hero/avatar only.
 
 function App() {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState("dark");
   const [navSolid, setNavSolid] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -21,6 +25,8 @@ function App() {
     } else {
       root.classList.remove("dark");
     }
+    // Force reset overflow on mount (fixes scroll locking if HMR interrupts a modal)
+    document.body.style.overflow = "";
   }, [theme]);
 
   useEffect(() => {
@@ -292,12 +298,11 @@ function HeroSection() {
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
                 Currently
               </p>
-              <p className="mt-2 text-sm font-semibold text-slate-900">
-                Sr Software Engineer · Smatt Account
+              <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-white">
+                Software Engineer · Ministry of Education Rwanda
               </p>
               <p className="mt-1 text-xs text-slate-600 dark:text-slate-200">
-                Leading ERP development across web, mobile, and desktop platforms, API design, cross-functional
-                delivery, and deployment.
+                Contributing to full SDLC, optimizing systems, integrating customized open-source solutions, and ensuring data integrity.
               </p>
 
               <dl className="mt-6 space-y-3 text-xs text-slate-600">
@@ -502,9 +507,22 @@ function SkillsSection() {
 function ExperienceSection() {
   const items = [
     {
+      role: "Software Engineer",
+      company: "Ministry of Education Rwanda",
+      period: "Sep 2026 – Present",
+      location: "Kigali, Rwanda",
+      bullets: [
+        "Contributed to the full software development lifecycle, from gathering requirements and designing prototypes to deploying customized open-source solutions.",
+        "Developed clean, testable code while implementing system integrations, optimizing performance, and resolving complex defects.",
+        "Maintained version control and release management, performed code reviews, and executed rigorous quality assurance testing.",
+        "Ensured robust data integrity, managed secure code repositories, and handled continuous system upgrades and maintenance.",
+        "Conducted research on new technologies for proof-of-concepts and provided comprehensive training for system users.",
+      ],
+    },
+    {
       role: "Sr Software Engineer",
-      company: "Smatt Account",
-      period: "Jan 2025 – Present",
+      company: "Codible Group",
+      period: "Jan 2025 – Sep 2026",
       location: "Kigali, Rwanda",
       bullets: [
         "Leading development of a mobile ERP system with modern web and API architecture.",
@@ -612,346 +630,338 @@ function ExperienceSection() {
   );
 }
 
+function ProjectCard({ project, index, onOpenImage }) {
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.5, delay: index * 0.08, ease: "easeOut" }}
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-slate-900 transition-all duration-300 hover:-translate-y-1.5 hover:border-cyan-500 hover:shadow-xl hover:shadow-cyan-500/20 aspect-square w-full"
+    >
+      {/* Thumbnail Area - exactly 50% of card height */}
+      {project.thumbnail && (
+        <div 
+          className="relative flex h-1/2 w-full shrink-0 cursor-pointer items-center justify-center overflow-hidden bg-slate-950"
+          onClick={onOpenImage}
+        >
+          <img 
+            src={project.thumbnail} 
+            alt={project.title} 
+            className="h-full w-full object-cover object-top transition-transform duration-300 ease-out group-hover:scale-105" 
+            loading="lazy" 
+          />
+          
+          {/* Overlay Link on hover */}
+          <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-black/20 backdrop-blur-[2px]">
+            <span className="translate-y-4 rounded-full bg-slate-900/95 px-5 py-2.5 text-sm font-semibold text-white shadow-lg backdrop-blur-md transition-transform duration-300 group-hover:translate-y-0 border border-white/10">
+              Click to view full
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Text Content - fills the other 50% */}
+      <div className="flex flex-1 flex-col p-4 sm:p-5 overflow-hidden">
+        <div className="flex items-center justify-between gap-2 mb-1.5">
+          <p className="text-[11px] font-semibold tracking-wider text-cyan-400 uppercase">
+            {project.tag}
+          </p>
+        </div>
+        <h3 className="text-base sm:text-lg font-bold text-white line-clamp-1 mb-1.5">
+          {project.title}
+        </h3>
+        <p className="text-xs leading-relaxed text-slate-400 line-clamp-2 sm:line-clamp-3 mb-3">
+          {project.description}
+        </p>
+        
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          {project.tech.slice(0, 3).map((t) => (
+            <span key={t} className="rounded bg-white/5 px-2 py-0.5 text-[10px] font-medium text-slate-300 border border-white/5">
+              {t}
+            </span>
+          ))}
+        </div>
+
+        <div className="mt-auto flex items-center gap-2">
+          <button 
+            onClick={onOpenImage}
+            className="inline-flex w-full items-center justify-center rounded-lg bg-cyan-500/10 px-3 py-1.5 text-xs font-semibold text-cyan-400 transition-colors hover:bg-cyan-500/20"
+          >
+            View full
+          </button>
+
+          {project.private ? (
+            <div className="inline-flex items-center gap-1.5 rounded-lg bg-slate-800/80 px-4 py-2 text-sm font-medium text-slate-400 border border-slate-700/50">
+              🔒 Private project
+            </div>
+          ) : (
+            project.liveUrl && (
+              <a href={project.liveUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-lg border border-slate-600 px-4 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800 hover:text-white">
+                Live demo ↗
+              </a>
+            )
+          )}
+        </div>
+      </div>
+    </motion.article>
+  );
+}
+
 function ProjectsSection() {
+  // Project data array matching the requested schema
   const projects = [
     {
-      name: "Goodbye Old Home",
-      description:
-        "A platform for buying and selling investment properties that helps real estate investors connect, list, and close off‑market deals.",
-      details: [
-        "Designed and implemented the backend using Spring Boot and MySQL.",
-        "Built secure APIs for listing management and investor interactions.",
-        "Used Git and GitLab for version control and collaborative workflows.",
-      ],
-      tech: ["Spring Boot", "MySQL", "Git", "GitLab", "Postman"],
-      role: "Backend development · System design",
-      website: "https://goodbyeoldhome.com/",
-      repo: null,
-      images: ["/image/project/screencapture-goodbyeoldhome-2026-01-06-14_23_32.png"],
+      title: "Goodbye Old Home",
+      category: "Web",
+      tag: "Real Estate · Web",
+      thumbnail: "/image/project/thumb_goodbyeoldhome.jpg",
+      fullImage: ["/image/project/screencapture-goodbyeoldhome-2026-01-06-14_23_32.png"],
+      description: "A platform for buying and selling investment properties that helps real estate investors connect, list, and close off‑market deals.",
+      tech: ["Spring Boot", "MySQL", "Git", "GitLab"],
+      private: true,
+      liveUrl: "https://goodbyeoldhome.com/"
     },
     {
-      name: "SmattERP",
-      description:
-        "A comprehensive trading and stock management system. Manage inventory, track sales and purchases, and grow your business with powerful analytics.",
-      details: [
-        "Designed and developed end‑to‑end ERP modules for sales, purchases, inventory, and accounting.",
-        "Built secure backend services and rich web dashboards for real‑time business insights.",
-        "Implemented CI/CD and containerized deployments using Docker for reliable releases.",
-      ],
-      tech: ["Laravel", "Spring Boot", "React", "MySQL", "Docker"],
-      role: "Full‑stack ERP & inventory management",
-      website: "https://smatterp.com/",
-      repo: null,
-      images: [
+      title: "SmattERP",
+      category: "ERP",
+      tag: "ERP · Full-stack",
+      thumbnail: "/image/project/thumb_smatterp.jpg",
+      fullImage: [
         "/image/project/Dashboard-smatterp.png",
         "/image/project/Front page-smatterp.png",
         "/image/project/Dash-smatterp.jpg",
       ],
+      description: "A comprehensive trading and stock management system. Manage inventory, track sales and purchases, and grow your business with powerful analytics.",
+      tech: ["Laravel", "Spring Boot", "React", "Docker"],
+      private: true,
+      liveUrl: "https://smatterp.com/"
     },
     {
-      name: "Plant Health Assistant",
-      description:
-        "Mobile application that helps detect plant health issues and integrates with Firebase for storage and notifications.",
-      details: [
-        "Developed core Flutter application for capturing and assessing plant health.",
-        "Integrated backend APIs and Firebase for data storage and real-time updates.",
-        "Documented and tested APIs using Postman and Swagger.",
-        "Repository available on request.",
-      ],
+      title: "Plant Health Assistant",
+      category: "Mobile",
+      tag: "AI Tool · Mobile App",
+      thumbnail: "/image/project/thumb_plant_health.jpg",
+      fullImage: ["/image/project/Plant-Health-Assistant.png"],
+      description: "Mobile application that helps detect plant health issues and integrates with Firebase for storage and notifications.",
       tech: ["Flutter", "Firebase", "Postman", "Swagger"],
-      role: "Flutter mobile · API integration",
-      website: null,
-      repo: "https://github.com/Emmizo/agri_app",
-      images: ["/image/project/Plant-Health-Assistant.png"],
+      private: false,
+      liveUrl: "https://github.com/Emmizo/agri_app"
     },
     {
-      name: "Driver App",
-      description:
-        "Backend and mobile app used to manage drivers, integrate partner APIs, and provide an intuitive driver experience.",
-      details: [
-        "Implemented backend logic and REST APIs with Spring Boot.",
-        "Built Flutter mobile UI using widgets tailored for driver workflows.",
-        "Used Postman, Git, Bitbucket, and MagicCode for testing and collaboration.",
-      ],
-      tech: ["Spring Boot", "Flutter", "Dart", "Postman", "Git", "Bitbucket", "MagicCode"],
-      role: "Backend APIs · Mobile UI implementation",
-      website: null,
-      repo: null,
-      images: [],
+      title: "Driver App",
+      category: "Mobile",
+      tag: "Logistics · Mobile App",
+      thumbnail: null,
+      fullImage: [],
+      description: "Backend and mobile app used to manage drivers, integrate partner APIs, and provide an intuitive driver experience.",
+      tech: ["Spring Boot", "Flutter", "Dart", "Bitbucket"],
+      private: true,
+      liveUrl: null
     },
     {
-      name: "Leave Management",
-      description:
-        "Leave management solution with backend and frontend modules to handle HR leave workflows and approvals.",
-      details: [
-        "Developed backend services for leave requests, approvals, and reporting using Spring Boot.",
-        "Implemented React.js frontend screens for employees and HR teams.",
-        "Used Git, GitHub, and Docker to manage versions and containerised deployments.",
-        "Repos available (React frontend and Java backend).",
-      ],
-      tech: ["Spring Boot", "React", "Docker", "Git", "GitHub"],
-      role: "Full‑stack development",
-      website: null,
-      repo: "https://github.com/Emmizo/leave-management",
-      images: [
+      title: "Leave Management",
+      category: "Web",
+      tag: "HR · Web App",
+      thumbnail: "/image/project/thumb_leavemanagement.jpg",
+      fullImage: [
         "/image/project/dashboard-leavemanagement.jpeg",
         "/image/project/Leave-apply-leavemanagement.jpeg",
         "/image/project/login-leavemanagement.jpeg",
       ],
-    },
+      description: "Leave management solution with backend and frontend modules to handle HR leave workflows and approvals.",
+      tech: ["Spring Boot", "React", "Docker", "GitHub"],
+      private: false,
+      liveUrl: "https://github.com/Emmizo/leave-management"
+    }
   ];
 
-  const [imageViewer, setImageViewer] = useState({
-    isOpen: false,
-    projectIndex: 0,
-    imageIndex: 0,
-  });
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [imageViewer, setImageViewer] = useState({ isOpen: false, projectIndex: 0, imageIndex: 0 });
+  
+  const filters = ["All", "Web", "Mobile", "ERP"];
+  const filteredProjects = activeFilter === "All" 
+    ? projects 
+    : projects.filter(p => p.category === activeFilter);
 
-  const openImages = (projectIndex, imageIndex = 0) => {
-    setImageViewer({ isOpen: true, projectIndex, imageIndex });
+  const handleOpenImage = (project) => {
+    const actualIndex = projects.findIndex((p) => p.title === project.title);
+    setImageViewer({ isOpen: true, projectIndex: actualIndex, imageIndex: 0 });
   };
 
   const closeImages = () => {
     setImageViewer((prev) => ({ ...prev, isOpen: false }));
   };
 
-  const showNextImage = () => {
+  const showNextImage = (e) => {
+    if (e) e.stopPropagation();
     setImageViewer((prev) => {
-      const project = projects[prev.projectIndex];
-      const total = project.images?.length || 0;
-      if (total === 0) return prev;
-      return {
-        ...prev,
-        imageIndex: (prev.imageIndex + 1) % total,
-      };
+      const proj = projects[prev.projectIndex];
+      if (!proj || !proj.fullImage || proj.fullImage.length <= 1) return prev;
+      return { ...prev, imageIndex: (prev.imageIndex + 1) % proj.fullImage.length };
     });
   };
 
-  const showPrevImage = () => {
+  const showPrevImage = (e) => {
+    if (e) e.stopPropagation();
     setImageViewer((prev) => {
-      const project = projects[prev.projectIndex];
-      const total = project.images?.length || 0;
-      if (total === 0) return prev;
-      return {
-        ...prev,
-        imageIndex: (prev.imageIndex - 1 + total) % total,
-      };
+      const proj = projects[prev.projectIndex];
+      if (!proj || !proj.fullImage || proj.fullImage.length <= 1) return prev;
+      return { ...prev, imageIndex: (prev.imageIndex - 1 + proj.fullImage.length) % proj.fullImage.length };
     });
   };
 
   useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === "Escape" && imageViewer.isOpen) {
-        closeImages();
-      }
+    const handleKeyDown = (e) => {
+      if (!imageViewer.isOpen) return;
+      if (e.key === "Escape") closeImages();
+      if (e.key === "ArrowRight") showNextImage();
+      if (e.key === "ArrowLeft") showPrevImage();
     };
-    
-    // Lock body scroll when modal is open
+
     if (imageViewer.isOpen) {
       document.body.style.overflow = "hidden";
-      document.addEventListener("keydown", handleEscape);
+      document.addEventListener("keydown", handleKeyDown);
     } else {
       document.body.style.overflow = "";
     }
     
     return () => {
       document.body.style.overflow = "";
-      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [imageViewer.isOpen]);
 
+  const activeProject = projects[imageViewer.projectIndex];
+
   return (
-    <section id="projects" className="section-padding bg-slate-50 dark:bg-slate-900">
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-8 max-w-2xl">
-          <p className={`${sectionTitleClasses} dark:text-slate-200`}>Projects</p>
-          <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-50 sm:text-3xl">
-            Projects
-          </h2>
-          <p className="mt-3 text-sm text-slate-600 dark:text-slate-200">
-            Some of the projects I&apos;ve worked on.
-          </p>
+    <section id="projects" className="section-padding bg-slate-950">
+      <div className="mx-auto max-w-7xl">
+        
+        {/* Header */}
+        <div className="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+          <div className="max-w-2xl">
+            <p className="text-sm font-semibold tracking-widest text-cyan-500 uppercase mb-3">
+              Projects
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+              Selected work
+            </h2>
+            <p className="mt-4 text-lg text-slate-400">
+              A showcase of robust web applications and intuitive mobile experiences.
+            </p>
+          </div>
+          
+          {/* Filters */}
+          <div className="flex flex-wrap gap-2">
+            {filters.map(filter => (
+              <button
+                key={filter}
+                onClick={() => setActiveFilter(filter)}
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200 ${
+                  activeFilter === filter 
+                    ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30" 
+                    : "bg-[#111A2F] text-slate-400 border border-white/5 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                {filter}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="grid gap-5 md:grid-cols-2">
-          {projects.map((project, index) => (
-            <article
-              key={project.name}
-              className="group glass-panel flex flex-col rounded-2xl p-5 transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg"
-            >
-                <header className="flex items-start justify-between gap-4">
-                  <div>
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">
-                      {project.name}
-                    </h3>
-                    <p className="mt-1 text-xs text-slate-600 dark:text-slate-200">
-                      {project.description}
-                    </p>
-                  </div>
-                </header>
-
-                {project.details && (
-                  <ul className="mt-3 space-y-1.5 text-xs text-slate-700 dark:text-slate-200">
-                    {project.details.map((line) => (
-                      <li key={line}>• {line}</li>
-                    ))}
-                  </ul>
-                )}
-
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {project.tech.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full bg-slate-50 px-2.5 py-1 text-[0.7rem] text-slate-700 shadow-sm dark:bg-slate-800 dark:text-slate-200"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                {(project.website || project.repo || (project.images && project.images.length > 0)) && (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {project.website && (
-                      <a
-                        href={project.website}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-slate-700 transition hover:-translate-y-0.5 hover:border-primary/40 hover:text-primary hover:shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-                      >
-                        Visit site
-                      </a>
-                    )}
-                    {project.repo && (
-                      <a
-                        href={project.repo}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-slate-700 transition hover:-translate-y-0.5 hover:border-primary/40 hover:text-primary hover:shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-                      >
-                        GitHub repo
-                      </a>
-                    )}
-                    {project.images && project.images.length > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => openImages(index)}
-                        className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-slate-700 transition hover:-translate-y-0.5 hover:border-primary/40 hover:text-primary hover:shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-                      >
-                        View images
-                      </button>
-                    )}
-                  </div>
-                )}
-
-                <p className="mt-3 text-[0.72rem] font-medium uppercase tracking-[0.16em] text-slate-500 dark:text-slate-300">
-                  Role: {project.role}
-                </p>
-            </article>
-          ))}
+        {/* Swiper Auto-Sliding Carousel */}
+        <div className="pb-12">
+          <Swiper
+            modules={[Autoplay, Pagination]}
+            spaceBetween={24}
+            slidesPerView={1}
+            autoplay={{ delay: 3000, disableOnInteraction: false }}
+            pagination={{ clickable: true }}
+            breakpoints={{
+              640: { slidesPerView: 2 },
+              1024: { slidesPerView: 3 },
+            }}
+            className="w-full"
+          >
+            {filteredProjects.map((project, index) => (
+              <SwiperSlide key={project.title}>
+                <ProjectCard 
+                  project={project} 
+                  index={index} 
+                  onOpenImage={() => handleOpenImage(project)}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
       </div>
 
-      {imageViewer.isOpen && projects[imageViewer.projectIndex] && createPortal(
-        <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/95 backdrop-blur-sm p-4"
+      {/* Fullscreen Image Lightbox Modal */}
+      {imageViewer.isOpen && activeProject && createPortal(
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0B1224]/95 backdrop-blur-md p-4 sm:p-8"
           onClick={closeImages}
-          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
         >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="relative mx-auto flex max-h-[90vh] w-full max-w-2xl flex-col rounded-2xl bg-white p-5 shadow-2xl dark:bg-slate-900"
-            style={{ height: '500px', border: '4px solid #164655' }}
+          {/* Close button */}
+          <button
+            onClick={closeImages}
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 z-[110] flex h-12 w-12 items-center justify-center rounded-full bg-[#111A2F] text-slate-300 hover:text-white border border-white/10 hover:border-cyan-500 transition-colors shadow-xl"
+            aria-label="Close"
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          {/* Prev/Next Navigation Overlay */}
+          {activeProject.fullImage?.length > 1 && (
+            <>
+              <button
+                onClick={showPrevImage}
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-[110] flex h-12 w-12 items-center justify-center rounded-full bg-[#111A2F] text-slate-300 hover:text-white border border-white/10 hover:border-cyan-500 transition-colors shadow-xl"
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button
+                onClick={showNextImage}
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-[110] flex h-12 w-12 items-center justify-center rounded-full bg-[#111A2F] text-slate-300 hover:text-white border border-white/10 hover:border-cyan-500 transition-colors shadow-xl"
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </>
+          )}
+
+          <div 
+            className="relative flex h-full w-full max-w-[1100px] flex-col rounded-2xl bg-[#111A2F] shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="mb-4 flex shrink-0 items-center justify-between gap-4">
-              <div>
-                <h3 className="text-base font-semibold text-slate-900 dark:text-slate-50">
-                  {projects[imageViewer.projectIndex].name}
-                </h3>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-300">
-                  Image {imageViewer.imageIndex + 1} of{" "}
-                  {projects[imageViewer.projectIndex].images.length}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={closeImages}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-lg font-semibold text-slate-600 transition hover:bg-slate-200 hover:text-slate-900 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-50"
-                aria-label="Close image viewer"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden">
-              <div className="relative flex h-full min-h-0 items-start justify-center overflow-auto rounded-xl bg-slate-50 p-4 dark:bg-slate-950" >
-                <img
-                  src={projects[imageViewer.projectIndex].images[imageViewer.imageIndex]}
-                  alt={`${projects[imageViewer.projectIndex].name} ${imageViewer.imageIndex + 1}`}
-                  className="h-auto w-full object-contain"
+            {/* Scrollable Image Area */}
+            <div className="flex-1 overflow-y-auto bg-[#0B1224]">
+              {activeProject.fullImage?.length > 0 ? (
+                <img 
+                  src={activeProject.fullImage[imageViewer.imageIndex]}
+                  alt="Full screenshot"
+                  className="w-full h-auto block mx-auto"
                 />
-                {projects[imageViewer.projectIndex].images.length > 1 && (
-                  <>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        showPrevImage();
-                      }}
-                      className="pointer-events-auto absolute left-2 top-1/2 -translate-y-1/2 z-20 inline-flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-primary text-2xl font-bold text-primary shadow-xl backdrop-blur transition-all hover:bg-primary hover:text-white hover:scale-110 dark:bg-slate-800 dark:border-primary dark:text-primary dark:hover:bg-primary dark:hover:text-white"
-                      aria-label="Previous image"
-                    >
-                      ‹
-                    </button>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        showNextImage();
-                      }}
-                      className="pointer-events-auto absolute right-2 top-1/2 -translate-y-1/2 z-20 inline-flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-primary text-2xl font-bold text-primary shadow-xl backdrop-blur transition-all hover:bg-primary hover:text-white hover:scale-110 dark:bg-slate-800 dark:border-primary dark:text-primary dark:hover:bg-primary dark:hover:text-white"
-                      aria-label="Next image"
-                    >
-                      ›
-                    </button>
-                  </>
-                )}
-              </div>
-
-              {projects[imageViewer.projectIndex].images.length > 1 && (
-                <div className="flex shrink-0 gap-2 overflow-x-auto pb-2">
-                  {projects[imageViewer.projectIndex].images.map((img, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setImageViewer((prev) => ({ ...prev, imageIndex: idx }));
-                      }}
-                      className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 transition hover:opacity-80 ${
-                        idx === imageViewer.imageIndex
-                          ? "border-primary ring-2 ring-primary/20"
-                          : "border-slate-200 dark:border-slate-700"
-                      }`}
-                      style={idx === imageViewer.imageIndex ? { borderColor: '#164655' } : {}}
-                    >
-                      <img
-                        src={img}
-                        alt={`Thumbnail ${idx + 1}`}
-                        className="h-full w-full object-cover"
-                      />
-                      {idx === imageViewer.imageIndex && (
-                        <div className="absolute inset-0 bg-primary/10" />
-                      )}
-                    </button>
-                  ))}
+              ) : (
+                <div className="flex h-full items-center justify-center text-slate-500">
+                  No image available
                 </div>
               )}
             </div>
-          </motion.div>
+            
+            {/* Optional multiple image indicator */}
+            {activeProject.fullImage?.length > 1 && (
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-[#111A2F]/90 backdrop-blur-md px-4 py-2 text-sm font-medium text-slate-300 border border-white/10 shadow-lg z-50">
+                {imageViewer.imageIndex + 1} of {activeProject.fullImage.length}
+              </div>
+            )}
+          </div>
         </div>,
         document.body
       )}
@@ -1190,41 +1200,70 @@ function CertificatesSection() {
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {certificates.map((cert) => (
-            <article
+          {certificates.map((cert, index) => (
+            <motion.article
               key={cert.name}
-              className="glass-panel group rounded-2xl p-5 transition-transform duration-200 hover:-translate-y-1"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{
+                duration: 0.5,
+                ease: "easeOut",
+                delay: index * 0.08,
+              }}
+              className="glass-panel group flex h-full flex-col overflow-hidden rounded-2xl transition-transform duration-200 hover:-translate-y-1"
             >
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">
-                {cert.name}
-              </h3>
-              <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
-                {cert.issuer}
-              </p>
-              {cert.description && (
-                <p className="mt-2 text-xs text-slate-700 dark:text-slate-200">
-                  {cert.description}
+              {/* Thumbnail */}
+              <div 
+                className={`relative h-[210px] w-full overflow-hidden bg-gradient-to-br ${
+                  cert.isPdf 
+                    ? 'from-primary/20 to-primary/10 dark:from-primary/30 dark:to-primary/20 cursor-pointer' 
+                    : 'from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700'
+                }`}
+                onClick={cert.isPdf ? () => openCertificate(cert) : undefined}
+              >
+                <div className="flex h-full items-center justify-center">
+                  {cert.isPdf ? (
+                    <div className="text-5xl">📜</div>
+                  ) : (
+                    <div className="text-5xl">🏆</div>
+                  )}
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              </div>
+
+              <div className="flex flex-col p-5">
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">
+                  {cert.name}
+                </h3>
+                <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
+                  {cert.issuer}
                 </p>
-              )}
-              {cert.isPdf ? (
-                <button
-                  type="button"
-                  onClick={() => openCertificate(cert)}
-                  className="mt-3 inline-flex items-center text-xs font-medium text-primary hover:underline dark:text-primary"
-                >
-                  View PDF →
-                </button>
-              ) : (
-                <a
-                  href={cert.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-3 inline-flex items-center text-xs font-medium text-primary hover:underline dark:text-primary"
-                >
-                  View certificate →
-                </a>
-              )}
-            </article>
+                {cert.description && (
+                  <p className="mt-2 text-xs text-slate-700 dark:text-slate-200">
+                    {cert.description}
+                  </p>
+                )}
+                {cert.isPdf ? (
+                  <button
+                    type="button"
+                    onClick={() => openCertificate(cert)}
+                    className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary transition hover:gap-2 hover:underline dark:text-primary"
+                  >
+                    View PDF →
+                  </button>
+                ) : (
+                  <a
+                    href={cert.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary transition hover:gap-2 hover:underline dark:text-primary"
+                  >
+                    View certificate →
+                  </a>
+                )}
+              </div>
+            </motion.article>
           ))}
         </div>
       </div>
