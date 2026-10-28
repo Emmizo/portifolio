@@ -689,7 +689,11 @@ function ExperienceSection() {
           })}
         </ol>
 
-        <a className="experience-download" href="#contact">
+        <a
+          className="experience-download"
+          href="/image/CV/KWIZERA_CV.pdf"
+          download="KWIZERA_CV.pdf"
+        >
           Download CV <span aria-hidden="true">↓</span>
         </a>
       </div>

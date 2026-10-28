@@ -1688,7 +1688,55 @@ footer p {
 
 [data-theme="dark"] #projects .project-card__link,
 [data-theme="dark"] #projects .project-card__link:hover {
-  color: var(--portfolio-ink);
+  color: var(--portfolio-accent);
+}
+
+[data-theme="dark"] #projects .project-card__media {
+  background: var(--portfolio-raised);
+}
+
+[data-theme="dark"] #projects .project-card__browser {
+  border-color: var(--portfolio-line);
+  background: var(--portfolio-surface);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] #projects .project-card__browser-bar {
+  background: var(--portfolio-raised);
+}
+
+[data-theme="dark"] #projects .project-card__browser-bar i {
+  background: #64748b;
+}
+
+[data-theme="dark"] #projects .project-card__overlay {
+  background: rgba(2, 6, 23, 0.64);
+}
+
+[data-theme="dark"] #projects .project-card__overlay > span {
+  border: 1px solid rgba(139, 227, 91, 0.45);
+  background: var(--portfolio-raised);
+  color: var(--portfolio-accent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+[data-theme="dark"] #projects .project-card__tag {
+  border-color: rgba(139, 227, 91, 0.3);
+  background: rgba(139, 227, 91, 0.12);
+  color: var(--portfolio-accent);
+}
+
+[data-theme="dark"] #projects .project-card__year,
+[data-theme="dark"] #projects .project-card__private {
+  color: var(--portfolio-muted);
+}
+
+[data-theme="dark"] #projects .project-card__tech {
+  color: var(--portfolio-muted);
+}
+
+[data-theme="dark"] #projects .project-card__tech + .project-card__tech::before {
+  color: #64748b;
 }
 
 [data-theme="dark"] #contact {
