@@ -5,7 +5,7 @@
     <link rel="icon" href="%PUBLIC_URL%/image/passport-photo.JPG" />
     <link rel="shortcut icon" href="%PUBLIC_URL%/image/passport-photo.JPG" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#fbfbfa" />
     <meta
       name="description"
       content="Portfolio of Kwizera Emmanuel – Software Engineer specializing in backend, web, and mobile development."
@@ -30,6 +30,20 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Kwizera Emmanuel</title>
+    <script>
+      (function () {
+        try {
+          var theme = localStorage.getItem("portfolio-theme");
+          var root = document.documentElement;
+          var isDark = theme === "dark";
+          root.classList.toggle("dark", isDark);
+          root.dataset.theme = isDark ? "dark" : "light";
+        } catch (error) {
+          document.documentElement.classList.remove("dark");
+          document.documentElement.dataset.theme = "light";
+        }
+      })();
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

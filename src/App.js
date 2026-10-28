@@ -2,10 +2,6 @@ import "./App.css";
 import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/pagination";
 
 const sectionTitleClasses =
   "text-sm font-semibold tracking-[0.16em] uppercase text-primary/80 mb-3";
@@ -14,7 +10,15 @@ const sectionTitleClasses =
 // to keep content always visible; motion is now focused on hero/avatar only.
 
 function App() {
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState(() => {
+    try {
+      return window.localStorage.getItem("portfolio-theme") === "dark"
+        ? "dark"
+        : "light";
+    } catch {
+      return "light";
+    }
+  });
   const [navSolid, setNavSolid] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -22,8 +26,15 @@ function App() {
     const root = document.documentElement;
     if (theme === "dark") {
       root.classList.add("dark");
+      root.dataset.theme = "dark";
     } else {
       root.classList.remove("dark");
+      root.dataset.theme = "light";
+    }
+    try {
+      window.localStorage.setItem("portfolio-theme", theme);
+    } catch {
+      // Theme still works for the current session when storage is unavailable.
     }
     // Force reset overflow on mount (fixes scroll locking if HMR interrupts a modal)
     document.body.style.overflow = "";
@@ -52,7 +63,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-[var(--portfolio-paper)] text-[var(--portfolio-ink)] transition-colors duration-300">
       <SiteChrome theme={theme} navSolid={navSolid || !isMobile} onToggleTheme={toggleTheme} />
       <main className={isMobile ? "pb-24" : ""}>
         <HeroSection />
@@ -326,12 +337,12 @@ function HeroSection() {
 
 function HeroHighlight({ label, value }) {
   return (
-    <div className="flex flex-col gap-0.5">
+    <a href="#skills" className="hero-highlight flex flex-col gap-0.5">
       <span className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-slate-500">
         {label}
       </span>
       <span className="text-xs text-slate-700">{value}</span>
-    </div>
+    </a>
   );
 }
 
@@ -372,38 +383,17 @@ function AboutSection() {
 
         <div className="space-y-4">
           <div className="glass-panel rounded-2xl p-5">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-              Highlights
-            </p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Highlights</p>
             <ul className="mt-3 space-y-2.5 text-xs text-slate-700 dark:text-slate-200">
-              <li>
-                • Led ERP system development and delivery for cross-functional
-                teams.
-              </li>
-              <li>
-                • Designed and implemented scalable backend APIs across Laravel,
-                Spring Boot, and Django.
-              </li>
-              <li>
-                • Built production React/Next.js and Flutter interfaces for
-                responsive web and mobile apps.
-              </li>
-              <li>
-                • Conducted training and mentorship, including a 15-day Flutter
-                program at Rwanda TVET Trainer Institute.
-              </li>
+              <li>• Led ERP system development and delivery for cross-functional teams.</li>
+              <li>• Designed and implemented scalable backend APIs across Laravel, Spring Boot, and Django.</li>
+              <li>• Built production React/Next.js and Flutter interfaces for responsive web and mobile apps.</li>
+              <li>• Conducted training and mentorship, including a 15-day Flutter program at Rwanda TVET Trainer Institute.</li>
             </ul>
           </div>
-
           <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 p-4 text-xs text-slate-600 dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-200">
-            <p className="font-semibold text-slate-800 dark:text-slate-100">
-              Currently exploring
-            </p>
-            <p className="mt-1">
-              Machine learning, blockchain, cybersecurity, and modern DevOps
-              practices—and always looking for ways to make complex systems
-              simpler and more intuitive for end users.
-            </p>
+            <p className="font-semibold text-slate-800 dark:text-slate-100">Currently exploring</p>
+            <p className="mt-1">Machine learning, blockchain, cybersecurity, and modern DevOps practices—and always looking for ways to make complex systems simpler and more intuitive for end users.</p>
           </div>
         </div>
       </div>
@@ -412,92 +402,130 @@ function AboutSection() {
 }
 
 function SkillsSection() {
-  const groups = [
+  const [coreOnly, setCoreOnly] = useState(false);
+  const skillGroups = [
     {
-      title: "Backend & APIs",
-      items: [
-        "Laravel",
-        "Spring Boot",
-        "Django",
-        "Node.js",
-        "USSD",
-        "REST APIs",
-        "AI Integration (OpenAI)",
+      category: "Backend & APIs",
+      icon: "⚙",
+      skills: [
+        { name: "Laravel", icon: "laravel", level: "core", note: "Used across ERP and logistics projects." },
+        { name: "Spring Boot", icon: "springboot", level: "core", note: "Used for production APIs and services." },
+        { name: "Django", icon: "django", level: "core" },
+        { name: "Node.js", icon: "nodedotjs", level: "core" },
+        { name: "REST APIs", icon: "fastapi", level: "core" },
+        { name: "USSD", level: "familiar" },
+        { name: "AI Integration (OpenAI)", level: "familiar" },
       ],
     },
     {
-      title: "Frontend & Mobile",
-      items: [
-        "React",
-        "Next.js",
-        "Flutter",
-        "HTML",
-        "CSS",
-        "JavaScript",
-        "Bootstrap",
+      category: "Frontend & Mobile",
+      icon: "◈",
+      skills: [
+        { name: "React", icon: "react", level: "core" },
+        { name: "Next.js", icon: "nextdotjs", level: "core" },
+        { name: "Flutter", icon: "flutter", level: "core" },
+        { name: "JavaScript", icon: "javascript", level: "core" },
+        { name: "HTML", icon: "html5", level: "familiar" },
+        { name: "CSS", level: "familiar" },
+        { name: "Bootstrap", icon: "bootstrap", level: "familiar" },
       ],
     },
     {
-      title: "Languages & Patterns",
-      items: ["Java", "PHP", "Python", "System analysis", "Agile methodology"],
-    },
-    {
-      title: "Data & Infrastructure",
-      items: [
-        "MySQL",
-        "PostgreSQL",
-        "SQL Server",
-        "Oracle DB",
-        "Docker",
-        "Digital Ocean",
-        "Firebase",
-        "Kafka",
-        "Windows Server / Linux",
-        "Virtualization",
-        "IIS",
-        "Server management",
+      category: "Languages",
+      icon: "</>",
+      skills: [
+        { name: "Java", icon: "openjdk", level: "core" },
+        { name: "PHP", icon: "php", level: "core" },
+        { name: "Python", icon: "python", level: "core" },
+        { name: "System analysis", level: "familiar" },
+        { name: "Agile methodology", level: "familiar" },
       ],
     },
     {
-      title: "Tools & Version Control",
-      items: ["Git version control", "GitHub", "GitLab", "Bitbucket"],
+      category: "Data & Infrastructure",
+      icon: "▦",
+      skills: [
+        { name: "MySQL", icon: "mysql", level: "core" },
+        { name: "PostgreSQL", icon: "postgresql", level: "core" },
+        { name: "Docker", icon: "docker", level: "core" },
+        { name: "Firebase", icon: "firebase", level: "core" },
+        { name: "SQL Server", level: "familiar" },
+        { name: "Oracle DB", level: "familiar" },
+        { name: "Digital Ocean", icon: "digitalocean", level: "familiar" },
+        { name: "Kafka", icon: "apachekafka", level: "familiar" },
+      ],
+    },
+    {
+      category: "Tools & DevOps",
+      icon: "⌘",
+      skills: [
+        { name: "Git version control", icon: "git", level: "core" },
+        { name: "GitHub", icon: "github", level: "core" },
+        { name: "GitLab", icon: "gitlab", level: "core" },
+        { name: "Bitbucket", icon: "bitbucket", level: "familiar" },
+        { name: "Windows Server / Linux", icon: "linux", level: "familiar" },
+        { name: "Virtualization", level: "familiar" },
+        { name: "IIS", level: "familiar" },
+        { name: "Server management", level: "familiar" },
+      ],
     },
   ];
 
+  const iconUrl = (icon) => `https://cdn.simpleicons.org/${icon}`;
+
   return (
-    <section id="skills" className="section-padding bg-slate-50 dark:bg-slate-900">
+    <section id="skills" className="section-padding">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-8 max-w-2xl">
+        <div className="skills-header mb-8 max-w-2xl">
           <p className={`${sectionTitleClasses} dark:text-slate-200`}>Skills</p>
           <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-50 sm:text-3xl">
             Technologies and tools I work with
           </h2>
-          <p className="mt-3 text-sm text-slate-600 dark:text-slate-200">
-            I work with various technologies across backend, frontend, and mobile development.
+          <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-200">
+            Full-stack engineer with 8+ years building ERP systems and APIs with Laravel, Spring Boot, React and Flutter.
           </p>
+          <div className="skills-toggle" role="group" aria-label="Skill visibility">
+            <button type="button" className={!coreOnly ? "skills-toggle__active" : ""} onClick={() => setCoreOnly(false)} aria-pressed={!coreOnly}>All</button>
+            <button type="button" className={coreOnly ? "skills-toggle__active" : ""} onClick={() => setCoreOnly(true)} aria-pressed={coreOnly}>Core only</button>
+          </div>
         </div>
 
-        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {groups.map((group) => (
-            <div
-              key={group.title}
-              className="glass-panel group rounded-xl p-4 transition hover:-translate-y-0.5 hover:shadow-md"
-            >
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-                {group.title}
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {group.items.map((item) => (
-                  <span
-                    key={item}
-                    className="inline-flex items-center rounded-md bg-slate-100 px-2 py-1 text-[0.7rem] font-medium text-slate-700 transition group-hover:bg-primary/10 group-hover:text-primary dark:bg-slate-800 dark:text-slate-200"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
+        <div className="skills-grid">
+          {skillGroups.map((group, index) => {
+            const visibleSkills = group.skills.filter((skill) => !coreOnly || skill.level === "core");
+            return (
+              <article key={group.category} className={`skills-card ${index === 0 ? "skills-card--featured" : ""}`}>
+                <header className="skills-card__header">
+                  <span className="skills-card__icon" aria-hidden="true">{group.icon}</span>
+                  <div>
+                    <h3>{group.category}</h3>
+                    <span>{group.skills.length} skills</span>
+                  </div>
+                </header>
+                <ul className="skills-list">
+                  {visibleSkills.map((skill) => (
+                    <li key={skill.name} className={skill.level === "core" ? "skill-pill skill-pill--core" : "skill-pill"}>
+                      {skill.icon ? <img src={iconUrl(skill.icon)} alt="" aria-hidden="true" loading="lazy" /> : <span className="skill-pill__fallback" aria-hidden="true">•</span>}
+                      <span>{skill.name}</span>
+                      {skill.note && <span className="skill-tooltip" role="tooltip">{skill.name}: {skill.note}</span>}
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            );
+          })}
+        </div>
+
+        <div className="skills-exploring">
+          <div>
+            <span className="skills-exploring__label">Currently exploring</span>
+            <p>Expanding my toolkit for resilient, intelligent products.</p>
+          </div>
+          <ul>
+            {["Machine learning", "Blockchain", "Cybersecurity", "DevOps"].map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>
@@ -505,202 +533,287 @@ function SkillsSection() {
 }
 
 function ExperienceSection() {
+  const prefersReducedMotion = useReducedMotion();
+  const [expandedRoles, setExpandedRoles] = useState({});
+  const [expandedOlderRoles, setExpandedOlderRoles] = useState({});
+
   const items = [
     {
       role: "Software Engineer",
       company: "Ministry of Education Rwanda",
       period: "Sep 2026 – Present",
       location: "Kigali, Rwanda",
+      employmentType: "Full-time",
+      current: true,
+      summary: "Own full-cycle delivery of secure, maintainable education systems from discovery through release and adoption.",
       bullets: [
-        "Contributed to the full software development lifecycle, from gathering requirements and designing prototypes to deploying customized open-source solutions.",
-        "Developed clean, testable code while implementing system integrations, optimizing performance, and resolving complex defects.",
-        "Maintained version control and release management, performed code reviews, and executed rigorous quality assurance testing.",
-        "Ensured robust data integrity, managed secure code repositories, and handled continuous system upgrades and maintenance.",
-        "Conducted research on new technologies for proof-of-concepts and provided comprehensive training for system users.",
+        "Led requirements discovery, prototyping, and deployment of customized open-source solutions across the full software development lifecycle. // TODO: Add delivery or adoption metric.",
+        "Implemented integrations, optimized system performance, and resolved complex defects with clean, testable code. // TODO: Add latency or defect-reduction metric.",
+        "Strengthened release quality through version control, code reviews, and rigorous quality assurance testing. // TODO: Add release cadence or quality metric.",
+        "Protected data integrity and repository security while coordinating upgrades, proof-of-concepts, and user training. // TODO: Add uptime, adoption, or training metric.",
       ],
+      tech: ["Laravel", "Spring Boot", "React", "Docker"],
     },
     {
       role: "Sr Software Engineer",
       company: "Codible Group",
       period: "Jan 2025 – Sep 2026",
       location: "Kigali, Rwanda",
+      employmentType: "Full-time",
+      summary: "Led the architecture and delivery of a mobile ERP platform spanning backend services, product interfaces, and team coordination.",
       bullets: [
-        "Leading development of a mobile ERP system with modern web and API architecture.",
-        "Designed and implemented backend services with Laravel, Spring Boot, and Django.",
-        "Built modern React/Next.js and Flutter interfaces for ERP modules.",
-        "Coordinating cross-functional teams to deliver features from design to deployment.",
+        "Led development of a mobile ERP system using modern web and API architecture. // TODO: Add module count or user metric.",
+        "Designed and shipped backend services with Laravel, Spring Boot, and Django. // TODO: Add API or performance metric.",
+        "Built React, Next.js, and Flutter interfaces for core ERP modules. // TODO: Add feature count or adoption metric.",
+        "Coordinated cross-functional delivery from design through deployment. // TODO: Add team size or delivery metric.",
       ],
+      tech: ["Laravel", "Spring Boot", "Django", "Flutter"],
     },
     {
       role: "Sr Software Engineer",
       company: "TechAffinity",
       period: "Jun 2021 – Dec 2024",
       location: "Kigali, Rwanda",
+      employmentType: "Full-time",
+      summary: "Delivered reliable web and mobile products while improving backend architecture, application performance, and product collaboration.",
       bullets: [
-        "Developed robust backend APIs using Laravel, Spring Boot, and Django.",
-        "Delivered responsive React, Next.js, and Flutter applications.",
-        "Led debugging and performance improvements to ensure reliability.",
-        "Collaborated closely with product and design to ship features on time.",
+        "Developed robust backend APIs with Laravel, Spring Boot, and Django. // TODO: Add endpoint or throughput metric.",
+        "Delivered responsive React, Next.js, and Flutter applications across web and mobile. // TODO: Add app or user metric.",
+        "Led debugging and performance improvements to strengthen product reliability. // TODO: Add response-time or incident metric.",
+        "Partnered with product and design to ship features on schedule. // TODO: Add delivery or release metric.",
       ],
+      tech: ["Laravel", "Spring Boot", "React", "Flutter"],
     },
     {
       role: "Full Stack Engineer",
       company: "Nozaax",
       period: "Nov 2019 – Jun 2021",
       location: "Kigali, Rwanda",
+      employmentType: "Full-time",
+      older: true,
+      summary: "Built end-to-end product foundations across APIs, databases, application architecture, and responsive interfaces.",
       bullets: [
-        "Implemented scalable backend APIs using Laravel, Node.js, and Spring Boot.",
-        "Designed application architecture and database schemas for MySQL, PostgreSQL, and Oracle.",
-        "Built user-friendly React and Flutter interfaces.",
+        "Implemented scalable backend APIs using Laravel, Node.js, and Spring Boot. // TODO: Add endpoint or traffic metric.",
+        "Designed application architecture and database schemas for MySQL, PostgreSQL, and Oracle. // TODO: Add data volume or query metric.",
+        "Built user-friendly React and Flutter interfaces for product workflows. // TODO: Add feature or user metric.",
       ],
+      tech: ["Laravel", "Node.js", "React", "Flutter"],
     },
     {
       role: "Backend Developer",
       company: "HviewTech",
       period: "May 2019 – Nov 2019",
       location: "Kigali, Rwanda",
+      employmentType: "Full-time",
+      older: true,
+      summary: "Developed dependable API and data foundations for internal and client-facing applications.",
       bullets: [
-        "Created RESTful APIs using Laravel for internal and client-facing applications.",
-        "Performed software analysis and relational database design.",
-        "Collaborated with frontend developers to integrate backend services cleanly and reliably.",
+        "Created RESTful APIs with Laravel for internal and client-facing applications. // TODO: Add endpoint or consumer metric.",
+        "Performed software analysis and relational database design to support maintainable systems. // TODO: Add schema or performance metric.",
+        "Collaborated with frontend developers to integrate backend services cleanly and reliably. // TODO: Add delivery or defect metric.",
       ],
+      tech: ["Laravel", "MySQL", "REST APIs", "Git"],
     },
   ];
 
   return (
-    <section id="experience" className="section-padding bg-white dark:bg-slate-900">
+    <section id="experience" className="section-padding">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-8 max-w-2xl">
+        <div className="mb-12 max-w-2xl">
           <p className={`${sectionTitleClasses} dark:text-slate-200`}>Experience</p>
-          <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-50 sm:text-3xl">
+          <h2 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-50 sm:text-4xl">
             Work experience
           </h2>
-          <p className="mt-3 text-sm text-slate-600 dark:text-slate-200">
+          <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-200">
             My professional journey in software development.
           </p>
         </div>
 
-        <div className="relative border-l border-slate-200 pl-6 sm:pl-8">
-          <div className="absolute left-[-1px] top-0 h-full w-[2px] bg-gradient-to-b from-primary via-primary/40 to-transparent" />
-          <div className="space-y-8">
-            {items.map((item, index) => (
-              <motion.article
+        <ol className="experience-timeline">
+          {items.map((item, index) => {
+            const isExpanded = expandedRoles[index] || !item.older;
+            const isOlderExpanded = expandedOlderRoles[index];
+            const visibleBullets = isOlderExpanded || isExpanded ? item.bullets : [];
+            return (
+              <motion.li
                 key={item.company}
-                initial={{
-                  opacity: 0,
-                  x: index % 2 === 0 ? -24 : 24,
-                }}
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, amount: 0.25 }}
-                transition={{
-                  duration: 0.5,
-                  ease: "easeOut",
-                  delay: 0.1 + index * 0.06,
-                }}
-                className="relative pl-4"
+                transition={{ duration: 0.45, ease: "easeOut", delay: index * 0.06 }}
+                className={`experience-entry ${item.current ? "experience-entry--current" : ""}`}
               >
-                <div className="absolute left-[-9px] top-2 h-3 w-3 rounded-full border-2 border-white bg-primary shadow-soft-card" />
-                <div className="glass-panel rounded-2xl p-5">
-                  <header className="flex flex-wrap items-baseline justify-between gap-2">
-                    <div>
-                      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">
-                        {item.role}
-                      </h3>
-                      <p className="text-xs text-slate-600 dark:text-slate-200">
-                        {item.company}
-                      </p>
-                    </div>
-                    <div className="text-right text-[0.7rem] text-slate-500">
-                      <p>{item.period}</p>
-                      <p>{item.location}</p>
-                    </div>
-                  </header>
-                  <ul className="mt-3 space-y-2 text-xs text-slate-700">
-                    {item.bullets.map((bullet) => (
-                      <li key={bullet}>• {bullet}</li>
-                    ))}
-                  </ul>
+                <span className="experience-dot" aria-hidden="true" />
+                <div className="experience-date">
+                  <time dateTime={item.period}>{item.period}</time>
+                  {item.current && <span className="experience-current-badge">Current</span>}
                 </div>
-              </motion.article>
-            ))}
-          </div>
-        </div>
+                <article className="experience-card">
+                  <header>
+                    <h3>{item.role}</h3>
+                    <p className="experience-company">
+                      {item.company} <span aria-hidden="true">·</span> {item.location} <span aria-hidden="true">·</span> {item.employmentType}
+                    </p>
+                    <span className="experience-period-pill">{item.period}</span>
+                  </header>
+                  <p className="experience-summary">{item.summary}</p>
+                  {(isExpanded || isOlderExpanded) && (
+                    <ul className="experience-bullets">
+                      {visibleBullets.slice(0, isExpanded || isOlderExpanded ? (expandedRoles[index] || isOlderExpanded ? item.bullets.length : 3) : 3).map((bullet) => (
+                        <li key={bullet}>{bullet.replace(/ \/\/ TODO:.*$/, "")}</li>
+                      ))}
+                    </ul>
+                  )}
+                  {item.bullets.length > 3 && (
+                    <button
+                      type="button"
+                      className="experience-toggle"
+                      aria-expanded={expandedRoles[index] || isOlderExpanded || false}
+                      onClick={() => {
+                        if (item.older && !isOlderExpanded) {
+                          setExpandedOlderRoles((previous) => ({ ...previous, [index]: true }));
+                        } else {
+                          setExpandedRoles((previous) => ({ ...previous, [index]: !previous[index] }));
+                        }
+                      }}
+                    >
+                      {item.older && !isOlderExpanded && !expandedRoles[index] ? "Show role details" : expandedRoles[index] ? "Show less" : "Show more"} <span aria-hidden="true">↓</span>
+                    </button>
+                  )}
+                  <div className="experience-tech" aria-label="Technologies used">
+                    {item.tech.map((tech) => <span key={tech}>{tech}</span>)}
+                  </div>
+                </article>
+              </motion.li>
+            );
+          })}
+        </ol>
+
+        <a className="experience-download" href="#contact">
+          Download CV <span aria-hidden="true">↓</span>
+        </a>
       </div>
     </section>
   );
 }
 
 function ProjectCard({ project, index, onOpenImage }) {
+  const isMobileProject = project.category === "Mobile";
+  const initials = project.title
+    .split(" ")
+    .map((word) => word[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  const handleCardKeyDown = (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onOpenImage();
+    }
+  };
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.1 }}
       transition={{ duration: 0.5, delay: index * 0.08, ease: "easeOut" }}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-slate-900 transition-all duration-300 hover:-translate-y-1.5 hover:border-cyan-500 hover:shadow-xl hover:shadow-cyan-500/20 aspect-square w-full"
+      tabIndex={0}
+      onClick={onOpenImage}
+      onKeyDown={handleCardKeyDown}
+      aria-label={`View ${project.title} case study`}
+      className={`project-card group relative flex h-full cursor-pointer flex-col overflow-hidden ${
+        index === 0 ? "project-card--featured" : ""
+      }`}
     >
-      {/* Thumbnail Area - exactly 50% of card height */}
-      {project.thumbnail && (
-        <div 
-          className="relative flex h-1/2 w-full shrink-0 cursor-pointer items-center justify-center overflow-hidden bg-slate-950"
-          onClick={onOpenImage}
-        >
-          <img 
-            src={project.thumbnail} 
-            alt={project.title} 
-            className="h-full w-full object-cover object-top transition-transform duration-300 ease-out group-hover:scale-105" 
-            loading="lazy" 
-          />
-          
-          {/* Overlay Link on hover */}
-          <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-black/20 backdrop-blur-[2px]">
-            <span className="translate-y-4 rounded-full bg-slate-900/95 px-5 py-2.5 text-sm font-semibold text-white shadow-lg backdrop-blur-md transition-transform duration-300 group-hover:translate-y-0 border border-white/10">
-              Click to view full
-            </span>
+      <div className={`project-card__media ${isMobileProject ? "project-card__media--mobile" : ""}`}>
+        {project.thumbnail ? (
+          isMobileProject ? (
+            <div className="project-card__phones">
+              <img
+                src={project.thumbnail}
+                alt={`${project.title} mobile application screens`}
+                width="640"
+                height="400"
+                loading="lazy"
+              />
+            </div>
+          ) : (
+            <div className="project-card__browser">
+              <div className="project-card__browser-bar" aria-hidden="true">
+                <i />
+                <i />
+                <i />
+              </div>
+              <img
+                src={project.thumbnail}
+                alt={`${project.title} desktop application screenshot`}
+                width="1280"
+                height="800"
+                loading="lazy"
+              />
+            </div>
+          )
+        ) : (
+          <div className="project-card__fallback" aria-label={`${project.title} project preview`}>
+            <span>{initials}</span>
           </div>
+        )}
+        <div className="project-card__overlay absolute inset-0 flex items-center justify-center">
+          <span>View case study <span aria-hidden="true">↗</span></span>
         </div>
-      )}
+      </div>
 
-      {/* Text Content - fills the other 50% */}
-      <div className="flex flex-1 flex-col p-4 sm:p-5 overflow-hidden">
-        <div className="flex items-center justify-between gap-2 mb-1.5">
-          <p className="text-[11px] font-semibold tracking-wider text-cyan-400 uppercase">
-            {project.tag}
+      <div className="flex flex-1 flex-col pt-5">
+        <div className="mb-2 flex items-center justify-between gap-3">
+          <p className="project-card__tag">
+            {project.category}
           </p>
+          <span className="project-card__year">2026</span>
         </div>
-        <h3 className="text-base sm:text-lg font-bold text-white line-clamp-1 mb-1.5">
+        <h3 className="mb-2 text-lg font-medium tracking-[-0.03em]">
           {project.title}
         </h3>
-        <p className="text-xs leading-relaxed text-slate-400 line-clamp-2 sm:line-clamp-3 mb-3">
+        <p className="project-card__description mb-4">
           {project.description}
         </p>
         
-        <div className="flex flex-wrap gap-1.5 mb-3">
-          {project.tech.slice(0, 3).map((t) => (
-            <span key={t} className="rounded bg-white/5 px-2 py-0.5 text-[10px] font-medium text-slate-300 border border-white/5">
+        <div className="mb-5 flex flex-wrap gap-x-2 gap-y-1">
+          {project.tech.slice(0, 4).map((t) => (
+            <span key={t} className="project-card__tech text-[0.62rem]">
               {t}
             </span>
           ))}
+          {project.tech.length > 4 && (
+            <span className="project-card__tech text-[0.62rem]">+{project.tech.length - 4}</span>
+          )}
         </div>
 
-        <div className="mt-auto flex items-center gap-2">
+        <div className="mt-auto flex flex-wrap items-center gap-3">
           <button 
             onClick={(e) => {
               e.stopPropagation();
               onOpenImage();
             }}
-            className="inline-flex w-full items-center justify-center rounded-lg bg-cyan-500/10 px-3 py-1.5 text-xs font-semibold text-cyan-400 transition-colors hover:bg-cyan-500/20"
+            className="project-card__link inline-flex items-center gap-2 text-sm font-semibold"
           >
-            View full
+            View case study <span aria-hidden="true">→</span>
           </button>
 
           {project.private ? (
-            <div className="inline-flex items-center gap-1.5 rounded-lg bg-slate-800/80 px-4 py-2 text-sm font-medium text-slate-400 border border-slate-700/50">
-              🔒 Private project
+            <div className="project-card__private text-sm" aria-label="Private project">
+              <span aria-hidden="true">🔒</span> Private project
             </div>
           ) : (
             project.liveUrl && (
-              <a href={project.liveUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-lg border border-slate-600 px-4 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800 hover:text-white">
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noreferrer"
+                onClick={(event) => event.stopPropagation()}
+                className="project-card__link text-sm font-semibold"
+              >
                 Live demo ↗
               </a>
             )
@@ -839,33 +952,28 @@ function ProjectsSection() {
   const activeProject = projects[imageViewer.projectIndex];
 
   return (
-    <section id="projects" className="section-padding bg-slate-950">
-      <div className="mx-auto max-w-7xl">
-        
-        {/* Header */}
-        <div className="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-          <div className="max-w-2xl">
-            <p className="text-sm font-semibold tracking-widest text-cyan-500 uppercase mb-3">
-              Projects
-            </p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+    <section id="projects" className="section-padding">
+      <div className="mx-auto">
+        <div className="projects-header mb-12 flex flex-col gap-8 md:mb-16 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-xl">
+            <p className="section-kicker mb-4 text-[0.62rem] font-semibold uppercase tracking-[0.2em]">
               Selected work
-            </h2>
-            <p className="mt-4 text-lg text-slate-400">
-              A showcase of robust web applications and intuitive mobile experiences.
+            </p>
+            <h2 className="text-4xl sm:text-5xl">Selected projects</h2>
+            <p className="project-intro mt-4 max-w-md text-sm leading-relaxed">
+              A selection of digital products, platforms, and tools built to solve real problems.
             </p>
           </div>
           
-          {/* Filters */}
-          <div className="flex flex-wrap gap-2">
+          <div className="projects-filters flex flex-wrap gap-2" role="group" aria-label="Filter projects">
             {filters.map(filter => (
               <button
                 key={filter}
                 onClick={() => setActiveFilter(filter)}
                 className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200 ${
                   activeFilter === filter 
-                    ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30" 
-                    : "bg-[#111A2F] text-slate-400 border border-white/5 hover:text-white hover:bg-white/5"
+                    ? "projects-filter--active"
+                    : "projects-filter"
                 }`}
               >
                 {filter}
@@ -874,32 +982,15 @@ function ProjectsSection() {
           </div>
         </div>
 
-        {/* Swiper Auto-Sliding Carousel */}
-        <div className="pb-12">
-          <Swiper
-            modules={[Autoplay, Pagination]}
-            spaceBetween={24}
-            slidesPerView={1}
-            preventClicks={false}
-            preventClicksPropagation={false}
-            autoplay={{ delay: 3000, disableOnInteraction: false }}
-            pagination={{ clickable: true }}
-            breakpoints={{
-              640: { slidesPerView: 2 },
-              1024: { slidesPerView: 3 },
-            }}
-            className="w-full"
-          >
-            {filteredProjects.map((project, index) => (
-              <SwiperSlide key={project.title}>
-                <ProjectCard 
-                  project={project} 
-                  index={index} 
-                  onOpenImage={() => handleOpenImage(project)}
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
+        <div className="projects-grid grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:gap-x-10 lg:gap-y-20">
+          {filteredProjects.map((project, index) => (
+            <ProjectCard
+              key={project.title}
+              project={project}
+              index={index}
+              onOpenImage={() => handleOpenImage(project)}
+            />
+          ))}
         </div>
       </div>
 
@@ -1023,69 +1114,126 @@ function ConsultancySection() {
 }
 
 function EducationSection() {
-  const items = [
+  const prefersReducedMotion = useReducedMotion();
+  const education = [
     {
-      school: "INES-Ruhengeri",
-      program: "Master of Science in Software Engineering",
-      period: "2024 – Ongoing",
-      details: [
-        "Advanced software architecture, scalability, and engineering management.",
-        "Research focus on An AI-Powered Restaurant Recommendation System Incorporating Real-Time Location Detection",
+      institution: "INES-Ruhengeri",
+      badge: "INES",
+      degree: "Master of Science in Software Engineering",
+      location: "Ruhengeri, Rwanda",
+      startYear: 2024,
+      endYear: null,
+      status: "In progress",
+      level: "Master's",
+      summary: "Advanced study focused on building scalable software systems and applying research to real-world product decisions.",
+      highlights: [
+        "Applied software architecture and scalability principles to advanced engineering work. // TODO: Add a specific system or project.",
+        "Researching an AI-powered restaurant recommendation system with real-time location detection.",
       ],
+      courses: ["Software Architecture", "Scalable Systems", "Machine Learning"],
+      research: "An AI-Powered Restaurant Recommendation System Incorporating Real-Time Location Detection",
     },
     {
-      school: "University of Kigali",
-      program: "Bachelor of Science in Information Technology",
-      period: "2019 – 2023",
-      details: [
-        "Core foundations in software engineering, systems, and database design.",
-        "Collaborated on academic projects spanning web and mobile stacks.",
+      institution: "University of Kigali",
+      badge: "UoK",
+      degree: "Bachelor of Science in Information Technology",
+      location: "Kigali, Rwanda",
+      startYear: 2019,
+      endYear: 2023,
+      status: "Completed",
+      level: "Bachelor's",
+      summary: "Built a broad foundation across software engineering, information systems, and database-backed application development.",
+      highlights: [
+        "Built a foundation in software engineering, systems analysis, and database design.",
+        "Collaborated on academic projects spanning web and mobile application stacks. // TODO: Add the strongest capstone or project name.",
       ],
+      courses: ["Database Design", "Web Development", "Systems Analysis"],
     },
     {
-      school: "RP Tumba",
-      program: "Information Communication and Technology",
-      period: "2015 – 2018",
-      details: [
-        "Foundations in ICT, systems, and applied technical practice.",
+      institution: "RP Tumba",
+      badge: "RP",
+      degree: "Information Communication and Technology",
+      location: "Tumba, Rwanda",
+      startYear: 2015,
+      endYear: 2018,
+      status: "Completed",
+      level: "Diploma",
+      summary: "Developed practical ICT foundations through applied systems, software, and technical problem-solving work.",
+      highlights: [
+        "Developed foundational ICT skills through applied technical practice.",
+        "Built early experience with systems and software development workflows. // TODO: Add a specific project or qualification detail.",
       ],
+      courses: ["Programming Fundamentals", "Computer Systems", "Networking"],
     },
   ];
 
   return (
-    <section id="education" className="section-padding bg-white dark:bg-slate-900">
+    <section id="education" className="section-padding">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-8 max-w-2xl">
+        <div className="mb-12 max-w-2xl">
           <p className={`${sectionTitleClasses} dark:text-slate-200`}>Education</p>
-          <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-50 sm:text-3xl">
-            Education
+          <h2 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-50 sm:text-4xl">
+            Education &amp; progression
           </h2>
+          <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-200">
+            A practical path from applied ICT foundations to advanced software engineering research.
+          </p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          {items.map((item) => (
-            <article
-              key={item.school}
-              className="glass-panel rounded-2xl p-5"
-            >
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">
-                {item.school}
-              </h3>
-              <p className="mt-1 text-xs text-slate-700 dark:text-slate-200">
-                {item.program}
-              </p>
-              <p className="text-[0.7rem] text-slate-500 dark:text-slate-300">
-                {item.period}
-              </p>
-              {item.details && (
-                <ul className="mt-2 space-y-1 text-xs text-slate-700 dark:text-slate-200">
-                  {item.details.map((d) => (
-                    <li key={d}>• {d}</li>
+        <div className="education-path">
+          {education.map((item, index) => {
+            const isFeatured = index === 0;
+            const period = `${item.startYear} – ${item.endYear || "Present"}`;
+            return (
+              <motion.article
+                key={item.institution}
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.45, delay: index * 0.08 }}
+                className={`education-card ${isFeatured ? "education-card--featured" : ""}`}
+              >
+                <span className="education-connector" aria-hidden="true" />
+                <div className="education-card__top">
+                  <div className="education-institution">
+                    <span className="education-badge" aria-hidden="true">{item.badge}</span>
+                    <div>
+                      <h3>{item.degree}</h3>
+                      <p>{item.institution}</p>
+                    </div>
+                  </div>
+                  <span className="education-level">{item.level}</span>
+                </div>
+                <div className="education-meta">
+                  <span>{item.location}</span>
+                  <time dateTime={`${item.startYear}-${item.endYear || "present"}`}>{period}</time>
+                  <span className={item.status === "In progress" ? "education-status education-status--active" : "education-status"}>
+                    {item.status}
+                  </span>
+                </div>
+                <p className="education-summary">{item.summary}</p>
+                {isFeatured && (
+                  <div className="education-research">
+                    <span>Research</span>
+                    <p>{item.research}</p>
+                  </div>
+                )}
+                <ul className="education-highlights">
+                  {item.highlights.map((highlight) => (
+                    <li key={highlight}>{highlight.replace(/ \/\/ TODO:.*$/, "")}</li>
                   ))}
                 </ul>
-              )}
-            </article>
-          ))}
+                {item.courses.length > 0 && (
+                  <div className="education-courses">
+                    <span>Key courses</span>
+                    <div>
+                      {item.courses.map((course) => <span key={course}>{course}</span>)}
+                    </div>
+                  </div>
+                )}
+              </motion.article>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -1093,107 +1241,148 @@ function EducationSection() {
 }
 
 function CertificatesSection() {
-  const [certificateViewer, setCertificateViewer] = useState({
-    isOpen: false,
-    certificate: null,
-  });
-
-  const openCertificate = (cert) => {
-    setCertificateViewer({ isOpen: true, certificate: cert });
-    document.body.style.overflow = "hidden";
-  };
-
-  const closeCertificate = () => {
-    setCertificateViewer({ isOpen: false, certificate: null });
-    document.body.style.overflow = "";
-  };
-
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === "Escape" && certificateViewer.isOpen) {
-        closeCertificate();
-      }
-    };
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [certificateViewer.isOpen]);
-
   const certificates = [
     {
-      name: "Windows Server Management and Security",
+      title: "Windows Server Management and Security",
       issuer: "Coursera",
+      year: 2024,
+      category: "Security",
       url: "https://www.coursera.org/account/accomplishments/verify/B3EJ6EZQKTEA",
     },
     {
-      name: "Introduction to Front-end Development with ReactJS",
+      title: "Introduction to Front-end Development with ReactJS",
       issuer: "Coursera",
+      year: 2024,
+      category: "Web",
       url: "https://www.coursera.org/account/accomplishments/verify/ZP2PYHTM9BZ6",
     },
     {
-      name: "RESTful API with HTTP and JavaScript",
+      title: "RESTful API with HTTP and JavaScript",
       issuer: "Coursera",
+      year: 2024,
+      category: "Web",
       url: "https://www.coursera.org/account/accomplishments/verify/6DLSFQRZDZTJ",
     },
     {
-      name: "Advanced Relational Database and SQL",
+      title: "Advanced Relational Database and SQL",
       issuer: "Coursera",
+      year: 2024,
+      category: "Databases",
       url: "https://www.coursera.org/account/accomplishments/verify/88ZWSUM7ZAKS",
     },
     {
-      name: "Front-End Web UI Frameworks and Tools: Bootstrap 4",
+      title: "Front-End Web UI Frameworks and Tools: Bootstrap 4",
       issuer: "Coursera",
+      year: 2024,
+      category: "Web",
       url: "https://www.coursera.org/account/accomplishments/verify/F2W3ZU8RRETE",
     },
     {
-      name: "Intel® Network Academy - Network Transformation 102",
+      title: "Intel® Network Academy - Network Transformation 102",
       issuer: "Intel",
+      year: 2023,
+      category: "Networking",
       url: "https://www.coursera.org/account/accomplishments/verify/AVN5PSX4NHUP",
     },
     {
-      name: "Build CRUD REST API in Django",
+      title: "Build CRUD REST API in Django",
       issuer: "Coursera",
+      year: 2023,
+      category: "Web",
       url: "https://www.coursera.org/account/accomplishments/verify/QL2CZP4QJR9G",
     },
     {
-      name: "Linux Server Management and Security",
+      title: "Linux Server Management and Security",
       issuer: "Coursera",
+      year: 2023,
+      category: "Security",
       url: "https://www.coursera.org/account/accomplishments/verify/HWPQG7XV3PJD",
     },
     {
-      name: "Technical Support Fundamentals",
+      title: "Technical Support Fundamentals",
       issuer: "Coursera",
+      year: 2023,
+      category: "Networking",
       url: "https://www.coursera.org/account/accomplishments/verify/8FB5DLSKE3ED",
     },
     {
-      name: "Programming for Everybody (Getting Started with Python)",
+      title: "Programming for Everybody (Getting Started with Python)",
       issuer: "Coursera",
+      year: 2023,
+      category: "Web",
       url: "https://www.coursera.org/account/accomplishments/verify/AZMGNQVH6UK7",
     },
     {
-      name: "Rwanda Blockchain Bootcamp",
+      title: "Rwanda Blockchain Bootcamp",
       issuer: "Digital Transformation Centre, Kigali",
+      year: 2023,
+      category: "Blockchain",
       description: "For taking part in the Rwanda blockchain bootcamp held on the 27th & 28th of November 2023",
       url: "/image/certificates/Blockchain .pdf",
-      isPdf: true,
+      featured: true,
     },
     {
-      name: "Curriculum Development Contribution",
+      title: "Curriculum Development Contribution",
       issuer: "Rwanda TVET Trainer Institute (RTTI)",
+      year: 2023,
+      category: "Web",
       description: "In recognition of valuable contribution to the curriculum development",
       url: "/image/certificates/Certificate-RTTI.pdf",
-      isPdf: true,
+      featured: true,
     },
     {
-      name: "ICP Blockchain Mega Hackathon",
+      title: "ICP Blockchain Mega Hackathon",
       issuer: "Internet Computer",
+      year: 2023,
+      category: "Blockchain",
       description: "For participation at the MEGA HACKATHON BY INTERNET COMPUTER",
       url: "/image/certificates/ICP-blockchain.pdf",
-      isPdf: true,
+      featured: true,
     },
   ];
 
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [showAll, setShowAll] = useState(false);
+  const categories = ["All", "Web", "Security", "Databases", "Blockchain", "Networking"];
+  const featured = certificates.filter((certificate) => certificate.featured);
+  const compact = certificates
+    .filter((certificate) => !certificate.featured)
+    .filter((certificate) => activeCategory === "All" || certificate.category === activeCategory)
+    .sort((a, b) => b.year - a.year || a.title.localeCompare(b.title));
+  const visibleCompact = showAll ? compact : compact.slice(0, 6);
+
+  const issuerInitials = (issuer) =>
+    issuer.split(/[\s-]+/).map((word) => word[0]).join("").slice(0, 2).toUpperCase();
+
+  const CertificateLink = ({ certificate, featuredCard = false }) => (
+    <a
+      href={certificate.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`certificate-card ${featuredCard ? "certificate-card--featured" : ""}`}
+      aria-label={`View credential: ${certificate.title}`}
+    >
+      <div className="certificate-badge" aria-hidden="true">
+        {featuredCard ? "✦" : issuerInitials(certificate.issuer)}
+      </div>
+      <div className="certificate-card__body">
+        <div className="certificate-card__meta">
+          <span>{certificate.category}</span>
+          <time dateTime={String(certificate.year)}>{certificate.year}</time>
+        </div>
+        <h3>{certificate.title}</h3>
+        <p>{certificate.issuer}</p>
+        {featuredCard && <p className="certificate-card__description">{certificate.description}</p>}
+        <span className="certificate-card__link">
+          {featuredCard ? "View PDF" : "View credential"} <span aria-hidden="true">↗</span>
+        </span>
+      </div>
+      <span className="certificate-card__external" aria-hidden="true">↗</span>
+    </a>
+  );
+
   return (
-    <section id="certificates" className="section-padding bg-slate-50 dark:bg-slate-900">
+    <section id="certificates" className="section-padding">
       <div className="mx-auto max-w-6xl">
         <div className="mb-8 max-w-2xl">
           <p className={`${sectionTitleClasses} dark:text-slate-200`}>Certificates</p>
@@ -1205,121 +1394,50 @@ function CertificatesSection() {
           </p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {certificates.map((cert, index) => (
-            <motion.article
-              key={cert.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{
-                duration: 0.5,
-                ease: "easeOut",
-                delay: index * 0.08,
-              }}
-              className="glass-panel group flex h-full flex-col overflow-hidden rounded-2xl transition-transform duration-200 hover:-translate-y-1"
-            >
-              {/* Thumbnail */}
-              <div 
-                className={`relative h-[210px] w-full overflow-hidden bg-gradient-to-br ${
-                  cert.isPdf 
-                    ? 'from-primary/20 to-primary/10 dark:from-primary/30 dark:to-primary/20 cursor-pointer' 
-                    : 'from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700'
-                }`}
-                onClick={cert.isPdf ? () => openCertificate(cert) : undefined}
-              >
-                <div className="flex h-full items-center justify-center">
-                  {cert.isPdf ? (
-                    <div className="text-5xl">📜</div>
-                  ) : (
-                    <div className="text-5xl">🏆</div>
-                  )}
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-              </div>
+        <div className="certificates-featured">
+          <div className="certificates-subhead">
+            <h3>Featured</h3>
+            <span>Selected achievements</span>
+          </div>
+          <div className="certificates-featured__grid">
+            {featured.map((certificate) => (
+              <CertificateLink key={certificate.title} certificate={certificate} featuredCard />
+            ))}
+          </div>
+        </div>
 
-              <div className="flex flex-col p-5">
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">
-                  {cert.name}
-                </h3>
-                <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
-                  {cert.issuer}
-                </p>
-                {cert.description && (
-                  <p className="mt-2 text-xs text-slate-700 dark:text-slate-200">
-                    {cert.description}
-                  </p>
-                )}
-                {cert.isPdf ? (
-                  <button
-                    type="button"
-                    onClick={() => openCertificate(cert)}
-                    className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary transition hover:gap-2 hover:underline dark:text-primary"
-                  >
-                    View PDF →
-                  </button>
-                ) : (
-                  <a
-                    href={cert.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary transition hover:gap-2 hover:underline dark:text-primary"
-                  >
-                    View certificate →
-                  </a>
-                )}
-              </div>
-            </motion.article>
-          ))}
+        <div className="certificates-courses">
+          <div className="certificates-subhead certificates-subhead--courses">
+            <h3>Courses &amp; certifications</h3>
+            <div className="certificate-filters" role="group" aria-label="Filter certificates by category">
+              {categories.map((category) => (
+                <button
+                  type="button"
+                  key={category}
+                  className={activeCategory === category ? "certificate-filter certificate-filter--active" : "certificate-filter"}
+                  onClick={() => {
+                    setActiveCategory(category);
+                    setShowAll(false);
+                  }}
+                  aria-pressed={activeCategory === category}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="certificates-compact__grid">
+            {visibleCompact.map((certificate) => (
+              <CertificateLink key={certificate.title} certificate={certificate} />
+            ))}
+          </div>
+          {compact.length > 6 && (
+            <button type="button" className="certificates-show-all" onClick={() => setShowAll((value) => !value)}>
+              {showAll ? "Show fewer" : `Show all (${compact.length})`} <span aria-hidden="true">↓</span>
+            </button>
+          )}
         </div>
       </div>
-
-      {certificateViewer.isOpen && certificateViewer.certificate && createPortal(
-        <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/95 backdrop-blur-sm p-4"
-          onClick={closeCertificate}
-          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="relative mx-auto flex h-[90vh] w-full max-w-4xl flex-col rounded-2xl bg-white p-5 shadow-2xl dark:bg-slate-900"
-            style={{ border: '4px solid #164655' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="mb-4 flex shrink-0 items-center justify-between gap-4">
-              <div>
-                <h3 className="text-base font-semibold text-slate-900 dark:text-slate-50">
-                  {certificateViewer.certificate.name}
-                </h3>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-300">
-                  {certificateViewer.certificate.issuer}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={closeCertificate}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-lg font-semibold text-slate-600 transition hover:bg-slate-200 hover:text-slate-900 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-50"
-                aria-label="Close certificate viewer"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="flex min-h-0 flex-1 overflow-hidden rounded-xl border-4 bg-slate-50 dark:bg-slate-950" style={{ borderColor: '#164655' }}>
-              <iframe
-                src={certificateViewer.certificate.url}
-                className="h-full w-full"
-                title={certificateViewer.certificate.name}
-                style={{ minHeight: '600px' }}
-              />
-            </div>
-          </motion.div>
-        </div>,
-        document.body
-      )}
     </section>
   );
 }
