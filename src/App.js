@@ -63,7 +63,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--portfolio-paper)] text-[var(--portfolio-ink)] transition-colors duration-300">
+    <div className="min-h-screen bg-(--portfolio-paper) text-(--portfolio-ink) transition-colors duration-300">
       <SiteChrome theme={theme} navSolid={navSolid} onToggleTheme={toggleTheme} />
       <main className={isMobile ? "pb-24" : ""}>
         <HeroSection />
@@ -119,7 +119,7 @@ function SiteChrome({ theme, navSolid, onToggleTheme }) {
             type="button"
             onClick={onToggleTheme}
             aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-            className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 transition hover:-translate-y-0.5 hover:border-primary/40 hover:text-primary hover:shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:text-primary"
+            className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 transition hover:-translate-y-0.5 hover:border-primary/40 hover:text-primary hover:shadow-xs dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:text-primary"
           >
             <span aria-hidden="true">
               {theme === "dark" ? "☀️" : "🌙"}
@@ -283,7 +283,7 @@ function HeroSection() {
             transition={{ duration: 0.6, ease: "easeOut", delay: 0.18 }}
             className="relative mx-auto max-w-md"
           >
-            <div className="absolute -inset-6 -z-10 bg-[radial-gradient(circle_at_top,_rgba(22,70,85,0.22),_transparent_55%)]" />
+            <div className="absolute -inset-6 -z-10 bg-[radial-gradient(circle_at_top,rgba(22,70,85,0.22),transparent_55%)]" />
             <div className="glass-panel rounded-3xl px-7 py-8">
               <div className="-mt-12 mb-4 flex items-end gap-3">
                 <div className="relative h-20 w-20 overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-100 shadow-md">
@@ -1003,13 +1003,13 @@ function ProjectsSection() {
       {/* Fullscreen Image Lightbox Modal */}
       {imageViewer.isOpen && activeProject && createPortal(
         <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0B1224]/95 backdrop-blur-md p-4 sm:p-8"
+          className="fixed inset-0 z-100 flex items-center justify-center bg-[#0B1224]/95 backdrop-blur-md p-4 sm:p-8"
           onClick={closeImages}
         >
           {/* Close button */}
           <button
             onClick={closeImages}
-            className="absolute top-4 right-4 sm:top-6 sm:right-6 z-[110] flex h-12 w-12 items-center justify-center rounded-full bg-[#111A2F] text-slate-300 hover:text-white border border-white/10 hover:border-cyan-500 transition-colors shadow-xl"
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 z-110 flex h-12 w-12 items-center justify-center rounded-full bg-[#111A2F] text-slate-300 hover:text-white border border-white/10 hover:border-cyan-500 transition-colors shadow-xl"
             aria-label="Close"
           >
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1022,7 +1022,7 @@ function ProjectsSection() {
             <>
               <button
                 onClick={showPrevImage}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-[110] flex h-12 w-12 items-center justify-center rounded-full bg-[#111A2F] text-slate-300 hover:text-white border border-white/10 hover:border-cyan-500 transition-colors shadow-xl"
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-110 flex h-12 w-12 items-center justify-center rounded-full bg-[#111A2F] text-slate-300 hover:text-white border border-white/10 hover:border-cyan-500 transition-colors shadow-xl"
               >
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -1030,7 +1030,7 @@ function ProjectsSection() {
               </button>
               <button
                 onClick={showNextImage}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-[110] flex h-12 w-12 items-center justify-center rounded-full bg-[#111A2F] text-slate-300 hover:text-white border border-white/10 hover:border-cyan-500 transition-colors shadow-xl"
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-110 flex h-12 w-12 items-center justify-center rounded-full bg-[#111A2F] text-slate-300 hover:text-white border border-white/10 hover:border-cyan-500 transition-colors shadow-xl"
               >
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -1040,7 +1040,7 @@ function ProjectsSection() {
           )}
 
           <div 
-            className="relative flex h-full w-full max-w-[1100px] flex-col rounded-2xl bg-[#111A2F] shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10 overflow-hidden"
+            className="relative flex h-full w-full max-w-275 flex-col rounded-2xl bg-[#111A2F] shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Scrollable Image Area */}
@@ -1544,7 +1544,7 @@ function ContactSection() {
                   placeholder="Your name"
                   value={contactName}
                   onChange={(e) => setContactName(e.target.value)}
-                  className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 outline-none transition focus:border-primary/60 focus:ring-1 focus:ring-primary/30 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                  className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 outline-hidden transition focus:border-primary/60 focus:ring-1 focus:ring-primary/30 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 />
               </div>
               <div className="space-y-1">
@@ -1560,7 +1560,7 @@ function ContactSection() {
                   placeholder="you@example.com"
                   value={contactEmail}
                   onChange={(e) => setContactEmail(e.target.value)}
-                  className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 outline-none transition focus:border-primary/60 focus:ring-1 focus:ring-primary/30 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                  className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 outline-hidden transition focus:border-primary/60 focus:ring-1 focus:ring-primary/30 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 />
               </div>
               <div className="space-y-1">
@@ -1576,7 +1576,7 @@ function ContactSection() {
                   placeholder="A short description of what you’d like to work on."
                   value={contactMessage}
                   onChange={(e) => setContactMessage(e.target.value)}
-                  className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 outline-none transition focus:border-primary/60 focus:ring-1 focus:ring-primary/30 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                  className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 outline-hidden transition focus:border-primary/60 focus:ring-1 focus:ring-primary/30 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 />
               </div>
               <button

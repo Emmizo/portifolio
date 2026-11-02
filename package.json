@@ -24,7 +24,7 @@
     "build": "craco build",
     "build:netlify": "craco build",
     "test": "craco test",
-    "tailwind:watch": "tailwindcss -i ./src/index.css -o ./src/tailwind.css --watch",
+    "tailwind:watch": "npx @tailwindcss/cli -i ./src/index.css -o ./src/tailwind.css --watch",
     "eject": "react-scripts eject"
   },
   "proxy": "http://localhost:5000",
@@ -48,8 +48,9 @@
   },
   "devDependencies": {
     "@craco/craco": "^7.1.0",
-    "autoprefixer": "^10.4.19",
+    "@tailwindcss/cli": "^4.3.3",
+    "@tailwindcss/postcss": "^4.3.3",
     "postcss": "^8.4.35",
-    "tailwindcss": "^3.4.14"
+    "tailwindcss": "^4.3.3"
   }
 }

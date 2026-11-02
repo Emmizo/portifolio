@@ -2,14 +2,12 @@
  * Connects Tailwind CSS to Create React App via PostCSS.
  */
 
-const tailwindcss = require("tailwindcss");
-const autoprefixer = require("autoprefixer");
+const tailwindcss = require("@tailwindcss/postcss");
 
 module.exports = {
   style: {
     postcss: {
-      plugins: [tailwindcss, autoprefixer],
+      plugins: [tailwindcss],
     },
   },
 };
-
