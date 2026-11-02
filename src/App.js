@@ -64,7 +64,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[var(--portfolio-paper)] text-[var(--portfolio-ink)] transition-colors duration-300">
-      <SiteChrome theme={theme} navSolid={navSolid || !isMobile} onToggleTheme={toggleTheme} />
+      <SiteChrome theme={theme} navSolid={navSolid} onToggleTheme={toggleTheme} />
       <main className={isMobile ? "pb-24" : ""}>
         <HeroSection />
         <AboutSection />
@@ -85,7 +85,9 @@ function App() {
 function SiteChrome({ theme, navSolid, onToggleTheme }) {
   return (
     <div
-      className="sticky top-0 z-40 bg-white dark:bg-slate-900 transition-all duration-300"
+      className={`site-chrome sticky top-0 z-40 transition-all duration-300 ${
+        navSolid ? "site-chrome--solid" : "site-chrome--transparent"
+      }`}
     >
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         <div className="flex items-center gap-2">
@@ -1126,8 +1128,9 @@ function EducationSection() {
       degree: "Master of Science in Software Engineering",
       location: "Ruhengeri, Rwanda",
       startYear: 2024,
-      endYear: null,
-      status: "In progress",
+      endYear: 2026,
+      endDate: "2026-10",
+      status: "Completed",
       level: "Master's",
       summary: "Advanced study focused on building scalable software systems and applying research to real-world product decisions.",
       highlights: [
@@ -1187,7 +1190,7 @@ function EducationSection() {
         <div className="education-path">
           {education.map((item, index) => {
             const isFeatured = index === 0;
-            const period = `${item.startYear} – ${item.endYear || "Present"}`;
+            const period = `${item.startYear} – ${item.endDate ? "October 2026" : item.endYear || "Present"}`;
             return (
               <motion.article
                 key={item.institution}
@@ -1210,7 +1213,7 @@ function EducationSection() {
                 </div>
                 <div className="education-meta">
                   <span>{item.location}</span>
-                  <time dateTime={`${item.startYear}-${item.endYear || "present"}`}>{period}</time>
+                  <time dateTime={item.endDate || `${item.startYear}-${item.endYear || "present"}`}>{period}</time>
                   <span className={item.status === "In progress" ? "education-status education-status--active" : "education-status"}>
                     {item.status}
                   </span>

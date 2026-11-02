@@ -45,14 +45,14 @@
 }
 
 html {
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
   background: var(--portfolio-paper);
   color: var(--portfolio-ink);
   font-family: "DM Sans", sans-serif;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body,
@@ -81,6 +81,22 @@ textarea {
 
 section {
   scroll-margin-top: 5rem;
+}
+
+.site-chrome {
+  isolation: isolate;
+  background-color: transparent;
+}
+
+.site-chrome--solid {
+  background-color: var(--portfolio-paper);
+  border-bottom: 1px solid var(--portfolio-line);
+  box-shadow: 0 8px 24px rgba(32, 33, 32, 0.06);
+}
+
+.site-chrome--transparent {
+  border-bottom-color: transparent;
+  box-shadow: none;
 }
 
 /* The visual language is intentionally shared across the existing sections. */
